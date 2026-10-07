@@ -1,0 +1,7 @@
+FROM modding-lab:1.0.0
+USER root
+COPY downloads/system-packages /tmp/system-packages
+RUN dpkg -i /tmp/system-packages/*.deb && rm -rf /tmp/system-packages
+COPY patches/initialize_ghidra_scripts.py /opt/lab-patches/initialize_ghidra_scripts.py
+RUN /opt/venv/bin/python /opt/lab-patches/initialize_ghidra_scripts.py
+USER modder

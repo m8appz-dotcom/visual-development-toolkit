@@ -1,0 +1,40 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "modding-lab": {
+      "type": "stdio",
+      "command": "D:\\modding-lab\\windows\\venv\\Scripts\\python.exe",
+      "args": [
+        "${PLUGIN_ROOT}/server/lab_mcp.py"
+      ],
+      "env": {
+        "MODDING_LAB_ROOT": "D:\\modding-lab",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    },
+    "ghidra": {
+      "type": "stdio",
+      "command": "D:\\modding-lab\\windows\\venv\\Scripts\\python.exe",
+      "args": [
+        "${PLUGIN_ROOT}/server/docker_mcp.py",
+        "ghidra"
+      ],
+      "env": {
+        "MODDING_LAB_ROOT": "D:\\modding-lab",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    },
+    "rea": {
+      "type": "stdio",
+      "command": "D:\\modding-lab\\windows\\venv\\Scripts\\python.exe",
+      "args": [
+        "${PLUGIN_ROOT}/server/docker_mcp.py",
+        "rea"
+      ],
+      "env": {
+        "MODDING_LAB_ROOT": "D:\\modding-lab",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}

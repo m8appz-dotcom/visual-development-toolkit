@@ -1,0 +1,30 @@
+# Local credentials and environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+# Downloaded runtimes, source checkouts and work data
+downloads/
+sources/
+projects/
+reports/
+logs/
+backups/
+delivery/
+windows/venv/
+windows/dotnet-sdk/
+windows/AssetStudio/
+windows/ILSpy/
+windows/AssetBridge/bin/
+windows/AssetBridge/obj/
+windows/AssetBridge/publish/
+**/__pycache__/
+**/*.pyc
+fixtures/managed/bin/
+fixtures/managed/obj/
+fixtures/native/game_logic
+*.zip
+

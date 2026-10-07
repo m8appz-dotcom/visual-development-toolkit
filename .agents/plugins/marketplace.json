@@ -1,0 +1,20 @@
+{
+  "name": "modding-lab",
+  "interface": {
+    "displayName": "Modding Lab"
+  },
+  "plugins": [
+    {
+      "name": "game-modding-toolkit",
+      "source": {
+        "source": "local",
+        "path": "./plugins/game-modding-toolkit"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

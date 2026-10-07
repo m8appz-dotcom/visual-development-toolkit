@@ -1,0 +1,27 @@
+services:
+  analysis:
+    image: modding-lab:1.0.2
+    build:
+      context: .
+      dockerfile: Dockerfile.fix
+    container_name: modding-lab-analysis
+    init: true
+    restart: unless-stopped
+    cpus: 3
+    mem_limit: 8g
+    pids_limit: 256
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./projects:/lab/projects
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import os,pyghidra; assert os.path.isfile('/opt/ghidra/support/analyzeHeadless')"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: local
+      options:
+        max-size: 10m
+        max-file: '3'

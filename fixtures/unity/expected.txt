@@ -1,0 +1,1 @@
+Modding Lab: original Unity TextAsset fixture. Damage=50.
