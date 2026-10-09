@@ -1,8 +1,10 @@
 # Visual Development Toolkit
 
-Create and modify games and apps with visual elements. This Codex plugin combines source-development workflows with asset generation/conversion and optional compiled-code analysis. Version **1.1.0** includes REA, Ghidra, ILSpy, AssetStudio and universal-modder. PS5 projects are excluded.
+Create and modify games and apps with visual elements. This Codex plugin combines source-development workflows with asset generation/conversion and optional compiled-code analysis. Version **1.2.0** includes REA, Ghidra, ILSpy, AssetStudio and universal-modder. PS5 projects are excluded.
 
 Work from source code when available: implement the feature, prepare its visuals, integrate the actual files, then build/run the project and verify the result. Use the analysis tools only when existing compiled artifacts need investigation. Legacy mod workflows remain optional references.
+
+Version **1.2.0** adds a [native Windows runtime](docs/NATIVE-WINDOWS.md) for on-demand installation on X and Titan. The earlier 1.1.0 evidence and Bobi handoff remain historical records; the existing Bobi Docker runtime is preserved.
 
 ## Contents
 

@@ -9,6 +9,8 @@ os.environ.setdefault('UM_KB',str(ROOT/'sources/universal-modder/knowledge'))
 CONTAINER='modding-lab-analysis'
 MCP=FastMCP('Visual Development Toolkit')
 FLAGS=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0
+NATIVE=os.environ.get('MODDING_LAB_MODE')=='native'
+if NATIVE and os.name=='nt':FLAGS|=subprocess.BELOW_NORMAL_PRIORITY_CLASS
 
 def run(argv:list[str],timeout:int=180,cwd=None)->dict:
     proc=subprocess.run(argv,cwd=cwd,stdin=subprocess.DEVNULL,text=True,encoding='utf-8',errors='replace',capture_output=True,timeout=timeout,creationflags=FLAGS)
@@ -30,9 +32,20 @@ def contained(base:pathlib.Path,relative:str)->pathlib.Path:
     return path
 
 def linux(path:pathlib.Path)->str:
+    if NATIVE:return str(path.resolve())
     return '/lab/projects/'+path.resolve().relative_to(PROJECTS.resolve()).as_posix()
 
 def docker(argv:list[str],timeout:int=180,cwd='/lab/projects')->dict:
+    if NATIVE:
+        config=json.loads((ROOT/'native-runtime.json').read_text())
+        commands={
+            'um':[str(ROOT/'windows/venv/Scripts/um.exe')],
+            'rea':[config['node'],str(ROOT/'windows/rea/node_modules/rea-agents/scripts/rea.mjs')],
+            'ilspycmd':[str(ROOT/'windows/dotnet-sdk/dotnet.exe'),str(next((ROOT/'windows/ilspy-tools').rglob('ilspycmd.dll')))],
+            'python3':[sys.executable],
+        }
+        if argv[0] not in commands:raise ValueError('Unsupported native component.')
+        return run([*commands[argv[0]],*argv[1:]],timeout,PROJECTS if cwd=='/lab/projects' else cwd)
     extra=['-e','UM_KB=/opt/universal-modder/knowledge']
     if argv[:2]==['um','fal'] and os.environ.get('FAL_KEY'):extra+=['-e','FAL_KEY']
     return run(['docker','exec',*extra,'-w',cwd,CONTAINER,'timeout',str(timeout),*argv],timeout+15)
@@ -46,6 +59,11 @@ def save_result(base:pathlib.Path,name:str,result:dict):
 @MCP.tool()
 def component_status()->dict:
     """Check the actual Docker engine and all installed analysis and Windows components."""
+    if NATIVE:
+        import importlib.metadata as metadata
+        config=json.loads((ROOT/'native-runtime.json').read_text())
+        props=dict(line.split('=',1) for line in (pathlib.Path(config['ghidra'])/'Ghidra/application.properties').read_text().splitlines() if '=' in line)
+        return {'host':os.environ.get('COMPUTERNAME'),'runtime_root':str(ROOT),'mode':'native','windows':{name:(ROOT/'windows'/name).is_dir() for name in ['ILSpy','AssetStudio','AssetBridge','venv']},'fal_key_available':bool(os.environ.get('FAL_KEY')),'blender_available':bool(shutil.which('blender')),'analysis':{'ok':True,'versions':{'ghidra':props['application.version'],'headless_mcp':metadata.version('ghidra-headless-mcp'),'universal_modder':metadata.version('universal-modder'),'rea':docker(['rea','--version'],30),'ilspycmd':docker(['ilspycmd','--version'],30),'java':run([str(pathlib.Path(config['java'])/'bin/java.exe'),'-version'],30)},'rea_native_boundary':'Experimental Windows x64 native PE read-only P0; other targets depend on the selected REA provider.'}}
     state=run(['docker','inspect',CONTAINER,'--format','{{json .State}}'],30)
     status={'host':os.environ.get('COMPUTERNAME'),'runtime_root':str(ROOT),'container':state,'windows':{name:(ROOT/'windows'/name).is_dir() for name in ['ILSpy','AssetStudio','AssetBridge','venv']},'fal_key_available':bool(os.environ.get('FAL_KEY')),'blender_available':bool(shutil.which('blender'))}
     if state['ok']:
@@ -99,7 +117,7 @@ def run_um(project_name:str,args:list[str],platform:str='docker')->dict:
         if '..' in pathlib.PurePath(value).parts or re.match(r'^[A-Za-z]:',value) or value.startswith(('/','\\')):raise ValueError('Use project-relative paths.')
     if platform=='docker':
         # The gateway returns Windows artifact paths; map relative Windows separators for Linux.
-        mapped=[arg.replace('\\','/') if arg.startswith(('input\\','output\\','reports\\','backups\\')) else arg for arg in args]
+        mapped=[arg.replace('\\','/') if not NATIVE and arg.startswith(('input\\','output\\','reports\\','backups\\')) else arg for arg in args]
         result=docker(['um',*mapped],180,linux(base))
     elif platform=='windows':result=run([str(ROOT/'windows/venv/Scripts/um.exe'),*args],180,base)
     else:raise ValueError('Platform must be docker or windows.')
