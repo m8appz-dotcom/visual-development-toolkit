@@ -1,0 +1,333 @@
+{
+  "version": "5.2.1 LTS",
+  "build": "9e2066aef7ef",
+  "operators": [
+    {
+      "id": "mesh.primitive_cube_add",
+      "name": "Add Cube",
+      "description": "Construct a cube mesh that consists of six square faces",
+      "properties": [
+        "size",
+        "calc_uvs",
+        "enter_editmode",
+        "align",
+        "location",
+        "rotation",
+        "scale"
+      ]
+    },
+    {
+      "id": "mesh.subdivide",
+      "name": "Subdivide",
+      "description": "Subdivide selected edges",
+      "properties": [
+        "number_cuts",
+        "smoothness",
+        "ngon",
+        "quadcorner",
+        "fractal",
+        "fractal_along_normal",
+        "seed"
+      ]
+    },
+    {
+      "id": "object.modifier_add",
+      "name": "Add Modifier",
+      "description": "Add a procedural operation/effect to the active object",
+      "properties": [
+        "type",
+        "use_selected_objects"
+      ]
+    },
+    {
+      "id": "object.mode_set",
+      "name": "Set Object Mode",
+      "description": "Sets the object interaction mode",
+      "properties": [
+        "mode",
+        "toggle"
+      ]
+    },
+    {
+      "id": "render.render",
+      "name": "Render",
+      "description": "(undocumented operator)",
+      "properties": [
+        "animation",
+        "write_still",
+        "use_viewport",
+        "use_sequencer_scene",
+        "layer",
+        "scene",
+        "frame_start",
+        "frame_end"
+      ]
+    },
+    {
+      "id": "wm.save_as_mainfile",
+      "name": "Save As",
+      "description": "Save the current file in the desired location",
+      "properties": [
+        "filepath",
+        "hide_props_region",
+        "check_existing",
+        "filter_blender",
+        "filter_backup",
+        "filter_image",
+        "filter_movie",
+        "filter_python",
+        "filter_font",
+        "filter_sound",
+        "filter_text",
+        "filter_archive",
+        "filter_btx",
+        "filter_alembic",
+        "filter_usd",
+        "filter_obj",
+        "filter_volume",
+        "filter_folder",
+        "filter_blenlib",
+        "filemode",
+        "display_type",
+        "sort_method",
+        "compress",
+        "relative_remap",
+        "copy",
+        "show_save_modified_images_dialog"
+      ]
+    },
+    {
+      "id": "wm.open_mainfile",
+      "name": "Open",
+      "description": "Open a Blender file",
+      "properties": [
+        "filepath",
+        "hide_props_region",
+        "check_existing",
+        "filter_blender",
+        "filter_backup",
+        "filter_image",
+        "filter_movie",
+        "filter_python",
+        "filter_font",
+        "filter_sound",
+        "filter_text",
+        "filter_archive",
+        "filter_btx",
+        "filter_alembic",
+        "filter_usd",
+        "filter_obj",
+        "filter_volume",
+        "filter_folder",
+        "filter_blenlib",
+        "filemode",
+        "display_type",
+        "sort_method",
+        "load_ui",
+        "use_scripts",
+        "display_file_selector",
+        "state"
+      ]
+    },
+    {
+      "id": "export_scene.gltf",
+      "name": "Export glTF 2.0",
+      "description": "Export scene as glTF 2.0 file",
+      "properties": [
+        "filepath",
+        "check_existing",
+        "export_import_convert_lighting_mode",
+        "gltf_export_id",
+        "export_use_gltfpack",
+        "export_gltfpack_tc",
+        "export_gltfpack_tq",
+        "export_gltfpack_si",
+        "export_gltfpack_sa",
+        "export_gltfpack_slb",
+        "export_gltfpack_vp",
+        "export_gltfpack_vt",
+        "export_gltfpack_vn",
+        "export_gltfpack_vc",
+        "export_gltfpack_vpi",
+        "export_gltfpack_noq",
+        "export_gltfpack_kn",
+        "export_format",
+        "ui_tab",
+        "export_copyright",
+        "export_image_format",
+        "export_image_add_webp",
+        "export_image_webp_fallback",
+        "export_texture_dir",
+        "export_jpeg_quality",
+        "export_image_quality",
+        "export_keep_originals",
+        "export_texcoords",
+        "export_normals",
+        "export_gn_mesh",
+        "export_meshopt_compression_enable",
+        "export_meshopt_extension",
+        "export_draco_mesh_compression_enable",
+        "export_draco_mesh_compression_level",
+        "export_draco_position_quantization",
+        "export_draco_normal_quantization",
+        "export_draco_texcoord_quantization",
+        "export_draco_color_quantization",
+        "export_draco_generic_quantization",
+        "export_tangents",
+        "export_materials",
+        "export_unused_images",
+        "export_unused_textures",
+        "export_vertex_color",
+        "export_vertex_color_name",
+        "export_all_vertex_colors",
+        "export_active_vertex_color_when_no_material",
+        "export_attributes",
+        "use_mesh_edges",
+        "use_mesh_vertices",
+        "export_cameras",
+        "use_selection",
+        "use_visible",
+        "use_renderable",
+        "use_active_collection_with_nested",
+        "use_active_collection",
+        "use_active_scene",
+        "collection",
+        "at_collection_center",
+        "export_extras",
+        "export_yup",
+        "export_apply",
+        "export_shared_accessors",
+        "export_animations",
+        "export_frame_range",
+        "export_frame_step",
+        "export_force_sampling",
+        "export_sampling_interpolation_fallback",
+        "export_pointer_animation",
+        "export_animation_mode",
+        "export_nla_strips_merged_animation_name",
+        "export_def_bones",
+        "export_hierarchy_flatten_bones",
+        "export_hierarchy_flatten_objs",
+        "export_armature_object_remove",
+        "export_leaf_bone",
+        "export_optimize_animation_size",
+        "export_optimize_animation_keep_anim_armature",
+        "export_optimize_animation_keep_anim_object",
+        "export_optimize_disable_viewport",
+        "export_negative_frame",
+        "export_anim_slide_to_zero",
+        "export_bake_animation",
+        "export_merge_animation",
+        "export_anim_single_armature",
+        "export_reset_pose_bones",
+        "export_current_frame",
+        "export_rest_position_armature",
+        "export_anim_scene_split_object",
+        "export_skins",
+        "export_influence_nb",
+        "export_all_influences",
+        "export_morph",
+        "export_morph_normal",
+        "export_morph_tangent",
+        "export_morph_animation",
+        "export_morph_reset_sk_data",
+        "export_lights",
+        "export_try_sparse_sk",
+        "export_try_omit_sparse_sk",
+        "export_gpu_instances",
+        "export_action_filter",
+        "export_convert_animation_pointer",
+        "export_nla_strips",
+        "export_original_specular",
+        "will_save_settings",
+        "export_hierarchy_full_collections",
+        "export_extra_animations",
+        "export_loglevel",
+        "filter_glob"
+      ]
+    },
+    {
+      "id": "import_scene.gltf",
+      "name": "Import glTF 2.0",
+      "description": "Load a glTF 2.0 file",
+      "properties": [
+        "filepath",
+        "export_import_convert_lighting_mode",
+        "filter_glob",
+        "directory",
+        "files",
+        "loglevel",
+        "import_pack_images",
+        "merge_vertices",
+        "import_shading",
+        "bone_heuristic",
+        "disable_bone_shape",
+        "bone_shape_scale_factor",
+        "guess_original_bind_pose",
+        "import_webp_texture",
+        "import_unused_materials",
+        "import_select_created_objects",
+        "import_scene_extras",
+        "import_scene_as_collection",
+        "import_merge_material_slots",
+        "import_point_as_pointcloud"
+      ]
+    }
+  ],
+  "types": [
+    {
+      "id": "Armature",
+      "base": "ID",
+      "description": "Armature data-block containing a hierarchy of bones, usually used for rigging characters"
+    },
+    {
+      "id": "Camera",
+      "base": "ID",
+      "description": "Camera data-block for storing camera settings"
+    },
+    {
+      "id": "GeometryNodeTree",
+      "base": "NodeTree",
+      "description": "Node tree consisting of linked nodes used for geometries"
+    },
+    {
+      "id": "Light",
+      "base": "ID",
+      "description": "Light data-block for lighting a scene"
+    },
+    {
+      "id": "Material",
+      "base": "ID",
+      "description": "Material data-block to define the appearance of geometric objects for rendering"
+    },
+    {
+      "id": "Mesh",
+      "base": "ID",
+      "description": "Mesh data-block defining geometric surfaces"
+    },
+    {
+      "id": "Object",
+      "base": "ID",
+      "description": "Object data-block defining an object in a scene"
+    },
+    {
+      "id": "PoseBone",
+      "base": null,
+      "description": "Channel defining pose data for a bone in a Pose"
+    },
+    {
+      "id": "Scene",
+      "base": "ID",
+      "description": "Scene data-block, consisting in objects and defining time and render related settings"
+    },
+    {
+      "id": "ShaderNodeTree",
+      "base": "NodeTree",
+      "description": "Node tree consisting of linked nodes used for materials (and other shading data-blocks)"
+    }
+  ],
+  "limits": [
+    "Property names only; query current RNA/docs for defaults, enum values and context",
+    "These signatures are verified, not a test of every operator or every property value"
+  ]
+}

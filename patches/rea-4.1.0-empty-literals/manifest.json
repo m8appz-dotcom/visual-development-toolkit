@@ -1,0 +1,41 @@
+{
+  "runtime": "D:\\visual-development-toolkit\\windows\\rea\\node_modules\\rea-agents",
+  "version": "4.1.0",
+  "files": [
+    {
+      "file": "dist/application/JavaScriptArtifactGraphContext.js",
+      "original_sha256": "3c30d38559a19f85e236637861fefbf970fa200f14718a1bd515d5525eca5ff7",
+      "patched_sha256": "4e0157587c0a6c975e212354b29eee710bce9989e0122e98c9437a19427172f0"
+    },
+    {
+      "file": "dist/application/JavaScriptArtifactGraphFindings.js",
+      "original_sha256": "bb017c2dc4a905439770206b33bc4e9688c78680a947447290f10fa443714548",
+      "patched_sha256": "32377263a477ae9dcddaff5505f3ba104a1f4d4d29f623e7a9da2e7bb689c931"
+    },
+    {
+      "file": "dist/application/ElectronBoundaryGraphIpc.js",
+      "original_sha256": "c181c9a6726b8a4f18dacfd26c94da579cddee8279565f2b62367c5be0cbb8e1",
+      "patched_sha256": "84aa391071a11aa1c11cb830f64fcb1fd68a2d9fa2d0e73e5f1d860a134d0c38"
+    },
+    {
+      "file": "dist/application/JavaScriptSemanticGraphConstruction.js",
+      "original_sha256": "2132da00d5cbd64383cd1885ca7f8f70ebcc5e1e0d9049b134e718582046ca93",
+      "patched_sha256": "a7d210f27b44c74d28423eb63b91c668a9068e3f7e781ea570405897dd366c3c"
+    },
+    {
+      "file": "dist/application/JavaScriptSemanticGraphProjection.js",
+      "original_sha256": "de8d40f1b3c5d676a5ac25bb9c14d070ff275771186341e9c7937c126d01ee01",
+      "patched_sha256": "02e72f6bc17d70770fd4d0865e4230f5997640f09038298f5b529f92e62aa589"
+    },
+    {
+      "file": "dist/server/registerElectronTools.js",
+      "original_sha256": "6edf3edfe967cc447979940fa2b580ab53b4bfab96d51bed2e21339726e9a74a",
+      "patched_sha256": "4a55d48aff4988d484f0d550da7e6f8515fbb910ae22e775405e6ad1ea2f446a"
+    },
+    {
+      "file": "dist/server/JavaScriptGraphExportTool.js",
+      "original_sha256": null,
+      "patched_sha256": "b9cf50993cfbbb8afa3c8e5b3c1c25f95d9b60852ad10097571940ac3d5c61c3"
+    }
+  ]
+}

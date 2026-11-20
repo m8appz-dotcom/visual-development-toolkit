@@ -33,7 +33,6 @@ windows/AssetBridge/obj/
 windows/AssetBridge/publish/
 **/__pycache__/
 **/*.pyc
-**/*.Native.csproj
 fixtures/managed/bin/
 fixtures/managed/obj/
 fixtures/native/game_logic

@@ -1,4 +1,4 @@
-"""Local Windows MCP gateway. Analysis runs in the dedicated Docker container."""
+"""Reverse-engineering MCP gateway; uses the configured native or Docker runtime."""
 from __future__ import annotations
 import hashlib,json,os,pathlib,re,shutil,subprocess,sys,time,zipfile
 from mcp.server.fastmcp import FastMCP
@@ -47,7 +47,6 @@ def docker(argv:list[str],timeout:int=180,cwd='/lab/projects')->dict:
         if argv[0] not in commands:raise ValueError('Unsupported native component.')
         return run([*commands[argv[0]],*argv[1:]],timeout,PROJECTS if cwd=='/lab/projects' else cwd)
     extra=['-e','UM_KB=/opt/universal-modder/knowledge']
-    if argv[:2]==['um','fal'] and os.environ.get('FAL_KEY'):extra+=['-e','FAL_KEY']
     return run(['docker','exec',*extra,'-w',cwd,CONTAINER,'timeout',str(timeout),*argv],timeout+15)
 
 def save_result(base:pathlib.Path,name:str,result:dict):
@@ -58,14 +57,14 @@ def save_result(base:pathlib.Path,name:str,result:dict):
 
 @MCP.tool()
 def component_status()->dict:
-    """Check the actual Docker engine and all installed analysis and Windows components."""
+    """Inspect this host and its configured native or Docker analysis components."""
     if NATIVE:
         import importlib.metadata as metadata
         config=json.loads((ROOT/'native-runtime.json').read_text())
         props=dict(line.split('=',1) for line in (pathlib.Path(config['ghidra'])/'Ghidra/application.properties').read_text().splitlines() if '=' in line)
-        return {'host':os.environ.get('COMPUTERNAME'),'runtime_root':str(ROOT),'mode':'native','windows':{name:(ROOT/'windows'/name).is_dir() for name in ['ILSpy','AssetStudio','AssetBridge','venv']},'fal_key_available':bool(os.environ.get('FAL_KEY')),'blender_available':bool(shutil.which('blender')),'analysis':{'ok':True,'versions':{'ghidra':props['application.version'],'headless_mcp':metadata.version('ghidra-headless-mcp'),'universal_modder':metadata.version('universal-modder'),'rea':docker(['rea','--version'],30),'ilspycmd':docker(['ilspycmd','--version'],30),'java':run([str(pathlib.Path(config['java'])/'bin/java.exe'),'-version'],30)},'rea_native_boundary':'Experimental Windows x64 native PE read-only P0; other targets depend on the selected REA provider.'}}
+        return {'host':os.environ.get('COMPUTERNAME'),'runtime_root':str(ROOT),'mode':'native','windows':{name:(ROOT/'windows'/name).is_dir() for name in ['ILSpy','AssetStudio','AssetBridge','venv']},'analysis':{'ok':True,'versions':{'ghidra':props['application.version'],'headless_mcp':metadata.version('ghidra-headless-mcp'),'universal_modder':metadata.version('universal-modder'),'rea':docker(['rea','--version'],30),'ilspycmd':docker(['ilspycmd','--version'],30),'java':run([str(pathlib.Path(config['java'])/'bin/java.exe'),'-version'],30)},'rea_native_boundary':'Experimental Windows x64 native PE read-only P0; other targets depend on the selected REA provider.'}}
     state=run(['docker','inspect',CONTAINER,'--format','{{json .State}}'],30)
-    status={'host':os.environ.get('COMPUTERNAME'),'runtime_root':str(ROOT),'container':state,'windows':{name:(ROOT/'windows'/name).is_dir() for name in ['ILSpy','AssetStudio','AssetBridge','venv']},'fal_key_available':bool(os.environ.get('FAL_KEY')),'blender_available':bool(shutil.which('blender'))}
+    status={'host':os.environ.get('COMPUTERNAME'),'runtime_root':str(ROOT),'container':state,'windows':{name:(ROOT/'windows'/name).is_dir() for name in ['ILSpy','AssetStudio','AssetBridge','venv']}}
     if state['ok']:
         status['analysis']=docker(['python3','-c',"import json,subprocess,pathlib,importlib.metadata as m; props=dict(line.split('=',1) for line in pathlib.Path('/opt/ghidra/Ghidra/application.properties').read_text().splitlines() if '=' in line); print(json.dumps({'ghidra':props['application.version'],'headless_mcp':m.version('ghidra-headless-mcp'),'universal_modder':m.version('universal-modder'),'rea':subprocess.check_output(['rea','--version'],text=True).strip(),'ilspycmd':subprocess.check_output(['ilspycmd','--version'],text=True).strip(),'node':subprocess.check_output(['node','--version'],text=True).strip(),'java':subprocess.run(['java','-version'],capture_output=True,text=True).stderr.strip()}))"],60)
     return status
@@ -105,27 +104,10 @@ def recon_game(game_path:str)->dict:
     path=pathlib.Path(game_path).resolve(strict=True)
     return run([str(ROOT/'windows/venv/Scripts/um.exe'),'scan',str(path)],180)
 
-@MCP.tool()
-def run_um(project_name:str,args:list[str],platform:str='docker')->dict:
-    """Run universal-modder's scan, sprite, video, backup, render3d, comfy, fal, kb or publish check CLI in a project. Use --help to discover exact flags. Outputs must stay in the project. Cloud generation requires the user's key and authorized cost."""
-    base=project(project_name)
-    if not args or args[0] not in ['scan','sprite','video','backup','render3d','comfy','fal','kb','publish','--help']:raise ValueError('Unsupported group. Use the separate Windows interaction tool for win.')
-    if args[0]=='publish' and args[1:2]!=['check']:raise ValueError('Only package checking is exposed; publishing requires a separate workflow.')
-    if args[0]=='kb' and args[1:2] in [['pr'],['sync']]:raise ValueError('Network mutations are not exposed by this tool.')
-    for arg in args:
-        value=arg.split('=',1)[-1]
-        if '..' in pathlib.PurePath(value).parts or re.match(r'^[A-Za-z]:',value) or value.startswith(('/','\\')):raise ValueError('Use project-relative paths.')
-    if platform=='docker':
-        # The gateway returns Windows artifact paths; map relative Windows separators for Linux.
-        mapped=[arg.replace('\\','/') if not NATIVE and arg.startswith(('input\\','output\\','reports\\','backups\\')) else arg for arg in args]
-        result=docker(['um',*mapped],180,linux(base))
-    elif platform=='windows':result=run([str(ROOT/'windows/venv/Scripts/um.exe'),*args],180,base)
-    else:raise ValueError('Platform must be docker or windows.')
-    return save_result(base,'um',result)
 
 @MCP.tool()
 def rea_command(project_name:str,args:list[str])->dict:
-    """Run REA analysis commands inside Docker. Paths refer to /lab/projects/PROJECT. Full REA MCP tools are also connected separately."""
+    """Run allowed REA analysis commands in the configured native or Docker runtime. Prefer the separate REA MCP for supported operations."""
     base=project(project_name)
     allowed=['--help','--version','doctor','providers','capabilities','analyze','analyze-javascript-application','decompile','function','functions','strings','info','inspect-managed-artifact','compare']
     if not args or args[0] not in allowed:raise ValueError('Use an analysis command or --help.')
@@ -194,13 +176,6 @@ def verify_originals(project_name:str)->dict:
             results.append({'path':str(path),'unchanged':sha==record['sha256']})
     return {'ok':bool(results) and all(i['unchanged'] for i in results),'files':results}
 
-@MCP.tool()
-def windows_game_tool(project_name:str,args:list[str],visible_interaction_authorized:bool=False)->dict:
-    """Use universal-modder's native Windows game tools. Launch, capture, input and recording require explicit human authorization for visible interaction. kill and registry edits are excluded."""
-    base=project(project_name)
-    if not args or args[0] not in ['--help','ps','shot','record','drive','launch']:raise ValueError('Unsupported Windows operation.')
-    if args[0] not in ['--help','ps'] and not visible_interaction_authorized:raise ValueError('Obtain explicit user authorization for this visible game interaction first.')
-    return save_result(base,'windows',run([str(ROOT/'windows/venv/Scripts/um.exe'),'win',*args],180,base))
 
 @MCP.tool()
 def open_windows_tool(tool:str,visible_interaction_authorized:bool=False)->dict:
@@ -214,33 +189,6 @@ def open_windows_tool(tool:str,visible_interaction_authorized:bool=False)->dict:
     process=subprocess.Popen([str(path)],cwd=path.parent,env=env,creationflags=FLAGS,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     return {'started':True,'pid':process.pid,'executable':str(path),'gui_verified':False}
 
-@MCP.tool()
-def package_mod(project_name:str,output_folder:str)->dict:
-    """Optional legacy mod packaging, only for an explicit mod request. For game/app source or assets use package_project."""
-    base=project(project_name);folder=contained(base,output_folder)
-    if not folder.is_relative_to(base/'output'):raise ValueError('Package an authored folder inside output.')
-    check=docker(['um','publish','check',linux(folder)],60)
-    if not check['ok']:return check
-    archive=base/'output'/f'mod-{time.time_ns()}.zip'
-    with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
-        for p in folder.rglob('*'):
-            if p.is_file():z.write(p,p.relative_to(folder))
-    return {'ok':True,'archive':str(archive),'check':check}
 
-@MCP.tool()
-def package_project(project_name:str,output_folder:str)->dict:
-    """Bundle authored game/app source and visual assets from a project output folder into a ZIP. Does not build an installer or publish anything."""
-    base=project(project_name);folder=contained(base,output_folder)
-    if not folder.is_dir() or not folder.is_relative_to(base/'output') or folder==base/'output':
-        raise ValueError('Choose an authored subfolder inside output.')
-    entries=list(folder.rglob('*'))
-    if any(p.is_symlink() or p.is_junction() or not p.resolve().is_relative_to(folder) for p in entries):
-        raise ValueError('Package folders containing links are not supported.')
-    files=[p for p in entries if p.is_file()]
-    if not files:raise ValueError('The selected output folder has no files.')
-    archive=base/'output'/f'project-{time.time_ns()}.zip'
-    with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
-        for p in files:z.write(p,p.relative_to(folder).as_posix())
-    return {'ok':True,'archive':str(archive),'files':len(files),'kind':'source-and-assets'}
 
 if __name__=='__main__':MCP.run(transport='stdio')

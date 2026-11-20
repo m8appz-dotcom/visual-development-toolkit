@@ -3,36 +3,49 @@
   "mcpServers": {
     "modding-lab": {
       "type": "stdio",
-      "command": "D:\\modding-lab\\windows\\venv\\Scripts\\python.exe",
+      "command": "cmd.exe",
       "args": [
-        "${PLUGIN_ROOT}/server/lab_mcp.py"
+        "/d",
+        "/c",
+        "D:\\visual-development-toolkit\\windows\\venv\\Scripts\\python.exe",
+        "${PLUGIN_ROOT}/server/native_mcp.py",
+        "gateway"
       ],
       "env": {
-        "MODDING_LAB_ROOT": "D:\\modding-lab",
+        "MODDING_LAB_ROOT": "D:\\visual-development-toolkit",
+        "MODDING_LAB_MODE": "native",
         "PYTHONIOENCODING": "utf-8"
       }
     },
     "ghidra": {
       "type": "stdio",
-      "command": "D:\\modding-lab\\windows\\venv\\Scripts\\python.exe",
+      "command": "cmd.exe",
       "args": [
-        "${PLUGIN_ROOT}/server/docker_mcp.py",
+        "/d",
+        "/c",
+        "D:\\visual-development-toolkit\\windows\\venv\\Scripts\\python.exe",
+        "${PLUGIN_ROOT}/server/native_mcp.py",
         "ghidra"
       ],
       "env": {
-        "MODDING_LAB_ROOT": "D:\\modding-lab",
+        "MODDING_LAB_ROOT": "D:\\visual-development-toolkit",
+        "MODDING_LAB_MODE": "native",
         "PYTHONIOENCODING": "utf-8"
       }
     },
     "rea": {
       "type": "stdio",
-      "command": "D:\\modding-lab\\windows\\venv\\Scripts\\python.exe",
+      "command": "cmd.exe",
       "args": [
-        "${PLUGIN_ROOT}/server/docker_mcp.py",
+        "/d",
+        "/c",
+        "D:\\visual-development-toolkit\\windows\\venv\\Scripts\\python.exe",
+        "${PLUGIN_ROOT}/server/native_mcp.py",
         "rea"
       ],
       "env": {
-        "MODDING_LAB_ROOT": "D:\\modding-lab",
+        "MODDING_LAB_ROOT": "D:\\visual-development-toolkit",
+        "MODDING_LAB_MODE": "native",
         "PYTHONIOENCODING": "utf-8"
       }
     }

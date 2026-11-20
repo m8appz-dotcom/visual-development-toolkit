@@ -1,0 +1,26 @@
+{
+  "goal": "Deliver the accepted model as an inspected interactive HTML viewer with orbit/zoom",
+  "preconditions": [
+    "Final exported model and renderer output have been reviewed",
+    "Viewer serves only intended publication files"
+  ],
+  "steps": [
+    "Use a verified Tailscale URL under the user delivery rules",
+    "Load the real exported model, inspect silhouette/materials, rotate and zoom",
+    "Inspect desktop and narrow viewport; no clipped or unavailable controls",
+    "Link the .blend/model and original render when useful; keep operational logs out of the user interface"
+  ],
+  "checks": [
+    "Actual model loaded, no fabricated fallback geometry",
+    "Orbit and zoom visibly change the view",
+    "Viewer has no failed asset requests; accepted files are the files served"
+  ],
+  "limits": [
+    "This is a delivery checklist, not an executable renderer",
+    "Browser inspection is mandatory before claiming the viewer is ready"
+  ],
+  "topic": "delivery",
+  "blender_version": "5.2.1 LTS",
+  "blender_build": "9e2066aef7ef",
+  "validation": "Checklist exercised on actual exported lamp geometry in a Tailscale HTML viewer; desktop/mobile, rotate/zoom, Spanish persistence and asset loading checked."
+}

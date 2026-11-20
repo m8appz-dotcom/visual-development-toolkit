@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gta-enhanced-mod-tools"
+version = "0.4.4"
+description = "Local repeatable checks and journaled installation/rollback for GTA Enhanced mods"
+requires-python = ">=3.12"
+dependencies = ["mcp==1.30.0"]
+
+[project.scripts]
+gta-enhanced-test-runner = "test_runner:main"
+gta-mod-install-ledger = "ledger_cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "server"}
+py-modules = ["common", "install_ledger", "test_runner", "ledger_cli", "mod_lab_mcp", "package_inspection"]

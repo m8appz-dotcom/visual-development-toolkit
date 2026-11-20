@@ -1,0 +1,11 @@
+interface:
+  display_name: "Blender con MCP"
+  short_description: "Recetas de Blender y revisión visual del resultado"
+  default_prompt: "Usa $blender-agent para crear o editar la escena con el MCP actual, consultar las recetas necesarias y verificar el resultado visual."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "blender"
+      description: "MCP Blender existente con guía y recetas por tema"
+policy:
+  allow_implicit_invocation: true

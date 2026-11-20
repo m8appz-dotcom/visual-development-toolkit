@@ -1,0 +1,18 @@
+{
+  "goal": "Create a Geometry Nodes group using the5.2 interface and verify its evaluated displacement",
+  "preconditions": [
+    "Run the geometry recipe first in the same isolated scene; it creates RecipeQuad"
+  ],
+  "code": "import bpy\nobj=bpy.data.objects.get('RecipeQuad');assert obj is not None\ntree=bpy.data.node_groups.new('RecipeOffset','GeometryNodeTree')\ntree.interface.new_socket(name='Geometry',in_out='INPUT',socket_type='NodeSocketGeometry')\ntree.interface.new_socket(name='Geometry',in_out='OUTPUT',socket_type='NodeSocketGeometry')\ninp=tree.nodes.new('NodeGroupInput');out=tree.nodes.new('NodeGroupOutput');offset=tree.nodes.new('GeometryNodeSetPosition')\noffset.inputs['Offset'].default_value=(0,0,2)\ntree.links.new(inp.outputs['Geometry'],offset.inputs['Geometry']);tree.links.new(offset.outputs['Geometry'],out.inputs['Geometry'])\nmod=obj.modifiers.new('Offset','NODES');mod.node_group=tree\nbpy.context.view_layer.update();ev=obj.evaluated_get(bpy.context.evaluated_depsgraph_get());mesh=ev.to_mesh()\ntry:\n zs=[v.co.z for v in mesh.vertices];assert min(zs)>1.9 and max(zs)<2.01\n result={'node_group':tree.name,'min_z':min(zs),'max_z':max(zs)}\nfinally: ev.to_mesh_clear()\n",
+  "checks": [
+    "Group has Geometry input/output and two connected links",
+    "Evaluated Z bounds reflect offset plus thickness"
+  ],
+  "limits": [
+    "Adapt sockets/field domains to the actual group; do not overwrite existing groups"
+  ],
+  "topic": "nodes",
+  "blender_version": "5.2.1 LTS",
+  "blender_build": "9e2066aef7ef",
+  "validation": "Executable recipe tested via MCP in a fresh isolated session on Blender5.2.1LTS; see knowledge-acceptance.json. Limits remain as documented."
+}

@@ -1,0 +1,7 @@
+data/
+reports/
+outputs/
+backups/
+node_modules/
+*.log
+viewer/*.glb

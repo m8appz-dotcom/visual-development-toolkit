@@ -1,0 +1,20 @@
+{
+  "goal": "Create one explicit quad mesh without selection side effects and verify its evaluated solidify result",
+  "preconditions": [
+    "Isolated writable scene or authorized target collection",
+    "Names use a unique task prefix; retain returned references"
+  ],
+  "code": "import bpy\nmesh=bpy.data.meshes.new('RecipeQuad')\nmesh.from_pydata([(0,0,0),(1,0,0),(1,1,0),(0,1,0)],[],[(0,1,2,3)])\nmesh.update()\nobj=bpy.data.objects.new('RecipeQuad',mesh)\nbpy.context.scene.collection.objects.link(obj)\nmod=obj.modifiers.new('Thickness','SOLIDIFY');mod.thickness=.05\nbpy.context.view_layer.update()\nevaluated=obj.evaluated_get(bpy.context.evaluated_depsgraph_get());temporary=evaluated.to_mesh()\ntry:\n assert len(temporary.vertices)==8\n result={'object':obj.name,'source_vertices':len(mesh.vertices),'evaluated_vertices':len(temporary.vertices)}\nfinally: evaluated.to_mesh_clear()\n",
+  "checks": [
+    "4 source vertices, 8 evaluated vertices",
+    "Object is linked to the intended scene"
+  ],
+  "limits": [
+    "Make shared data single-user before independent edits",
+    "Not a general topology or artistic-quality certificate"
+  ],
+  "topic": "geometry",
+  "blender_version": "5.2.1 LTS",
+  "blender_build": "9e2066aef7ef",
+  "validation": "Executable recipe tested via MCP in a fresh isolated session on Blender5.2.1LTS; see knowledge-acceptance.json. Limits remain as documented."
+}

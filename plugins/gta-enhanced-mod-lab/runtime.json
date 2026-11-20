@@ -1,0 +1,13 @@
+{
+  "lab_root": "D:\\modding-lab\\projects\\gta-enhanced-marvel-lab",
+  "state_root": "D:\\modding-lab\\state\\gta-enhanced-mod-lab",
+  "dotnet": "D:\\modding-lab\\windows\\dotnet-sdk\\dotnet.exe",
+  "audit_dll": "D:\\modding-lab\\projects\\gta-enhanced-marvel-lab\\tools\\native-audit\\bin\\Release\\net10.0\\NativeAudit.dll",
+  "package_audit_dll": "D:\\modding-lab\\projects\\gta-enhanced-marvel-lab\\tools\\package-audit\\bin\\Release\\net10.0\\PackageAudit.dll",
+  "rpf_rebuild_dll": "D:\\modding-lab\\projects\\gta-enhanced-marvel-lab\\tools\\rpf-rebuild\\bin\\Release\\net10.0\\RpfRebuild.dll",
+  "game_root": "D:\\Downloads\\GTAVEnhanced",
+  "allowed_read_roots": ["D:\\modding-lab\\projects\\gta-enhanced-marvel-lab", "D:\\modding-lab\\state\\gta-enhanced-mod-lab"],
+  "allowed_install_roots": ["D:\\modding-lab\\state\\gta-enhanced-mod-lab\\staging"],
+  "qa_config": "C:\\Users\\video\\.codex\\config.toml",
+  "qa_server_name": "fivem-enhanced-qa"
+}

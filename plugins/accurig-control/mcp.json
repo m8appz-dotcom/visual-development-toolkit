@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "accurig-control": {
+      "type": "stdio",
+      "command": "D:/visual-development-toolkit/windows/node/node-v24.19.0-win-x64/node.exe",
+      "args": [
+        "D:\\visual-development-toolkit\\accurig-control-mcp\\src\\server.mjs"
+      ]
+    }
+  }
+}

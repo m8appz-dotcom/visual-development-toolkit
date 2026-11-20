@@ -1,7 +1,8 @@
 ---
 name: share-field-notes
-description: "Record reusable local development findings for games and visual apps, including asset recipes, framework versions, integration steps and actual checks. External sharing requires an explicit user request."
+description: "Registrar localmente hallazgos de ingeniería inversa con versiones, fuente, evidencia y límites. Usar para continuidad de una investigación; compartir fuera requiere una solicitud explícita."
 ---
 
-# Keep useful development notes
-Write local PROJECT_NOTES.md or the project's existing notes with versions, source paths, asset sizes/formats, generation manifest locations, integration steps, observed results and unresolved issues. Reuse bundled knowledge only where relevant. Do not run upstream knowledge-base PR or sharing workflows automatically. Send/upload/publish only when the user specifically authorizes the destination and content.
+# Notas de investigación
+
+Usa el estado o notas existentes del proyecto. Registra host y rutas verificadas, versión del artefacto/analizador, hashes, IDs de trabajo, hallazgos sustentados, errores, incógnitas y siguiente paso. Distingue análisis estático de observación de runtime. No envíes dumps, subas contenido ni abras PRs de la base de conocimiento por iniciativa propia.
