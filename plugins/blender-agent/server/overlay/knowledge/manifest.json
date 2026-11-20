@@ -1,0 +1,26 @@
+{
+  "version": "2.1.0",
+  "blender_build": "9e2066aef7ef",
+  "topics": {
+    "guide": "Compact execution and visual acceptance guide",
+    "quick_api": "Nine live-verified operator signatures",
+    "geometry": "Create one explicit quad mesh without selection side effects and verify its evaluated solidify result",
+    "nodes": "Create a Geometry Nodes group using the5.2 interface and verify its evaluated displacement",
+    "rig_animation": "Insert location keys and verify interpolation at a real frame",
+    "render": "Choose a measured preview/final budget and inspect a real camera render",
+    "export": "Export only an explicitly selected product to a NEW GLB file and reload it",
+    "delivery": "Deliver the accepted model as an inspected interactive HTML viewer with orbit/zoom",
+    "identity_preservation": "Identity-preserving local repair, GLB artifact guard and separate visual attestation"
+  },
+  "source_hashes": {
+    "delivery.json": "3cf216bf5fba93627df6cd2c3ac98d42343ecf3e92651ac518834963596a4bec",
+    "export.json": "9fb3e02e9e9b1e17f2f29dc5b9c98efa3923e8b9d8a46e2f06941a04873613f1",
+    "geometry.json": "83768584a976f760f4d1569168bd9b23bcdbe5bfe033a98e3725ce68f373f53f",
+    "guide.md": "7388837b7378be6cc2348303ebd6fc3668151c476652a7daab728f0d044b5304",
+    "nodes.json": "9a08d94b04aefc46a35bab4a01623062752ff83c8491e8a69062ba8e38599be5",
+    "quick-api.json": "0e6015cd5636c5812c71153ab0042f58e00e85ebf67c0062be11e90cb1eaf8d4",
+    "render.json": "048adfcf347109490e34c69a44c13ec12ca242e36a49489e239571dc9c6495f2",
+    "rig_animation.json": "ac8018555a79d1e04f176a75d441b06f2a717d79d4fc31171b7af68b05890ae4",
+    "identity-preservation.md": "0ec90030bdb0e32f3bb6ef96df91d27f9aadcab71c808aed80be22120655a8f7"
+  }
+}

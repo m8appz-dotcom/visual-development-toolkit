@@ -1,0 +1,22 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "blender-agent",
+  "version": "1.0.0",
+  "description": "Blender local, MCP mejorado y recetas con aceptación visual.",
+  "license": "GPL-3.0-or-later",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Blender Agent",
+        "shortDescription": "Blender, MCP y calidad visual",
+        "longDescription": "Blender 5.2.1 LTS con MCP local mejorado, recetas verificadas y revisión visual. Instala el runtime fijado en paralelo y conserva escenas existentes.",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "defaultPrompt": "Usa la skill blender-agent para trabajar con Blender y verificar el resultado visual."
+      }
+    }
+  }
+}

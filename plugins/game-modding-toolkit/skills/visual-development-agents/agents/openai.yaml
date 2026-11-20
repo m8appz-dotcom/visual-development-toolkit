@@ -1,0 +1,11 @@
+interface:
+  display_name: "Visual Development Agents"
+  short_description: "Analiza apps con REA y evidencia verificable"
+  default_prompt: "Usa $visual-development-agents para analizar esta aplicación y explicar los hallazgos con evidencia verificable."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "rea"
+      description: "Análisis REA y consultas persistentes de grafos"
+policy:
+  allow_implicit_invocation: true

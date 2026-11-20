@@ -1,0 +1,52 @@
+{
+  "application": {
+    "exe": "D:/Applications/Reallusion/AccuRIG/AccuRIG.exe",
+    "version": "2.1.1",
+    "electron": "14.2.9"
+  },
+  "runtime": {
+    "node": "D:/visual-development-toolkit/windows/node/node-v24.19.0-win-x64/node.exe",
+    "sdk": "2.3.1",
+    "python": "D:/visual-development-toolkit/windows/venv/Scripts/python.exe",
+    "python_mcp": "1.30.0"
+  },
+  "decompiled_sources": {
+    "background.js": "489c8474e5d74e1ebb38b6e8b6fad1133e796a53216e41f936e30cd2da9b4932",
+    "2.js": "76e6297798c5fb3e4841ee987fa1b87c3721503041338cef8baff43d073313d8",
+    "preload.js": "1c877b1e8374a460c3a6e6edce51e0241a6830c0476c52534b4eb6eca7573f9c"
+  },
+  "control_sources": {
+    "src/accurig.mjs": "0f4aacd6a2779503015600dcbd62550b2ae22c11fc14dfda4cdad9f577a68282",
+    "src/build-recovery.mjs": "96ddc5ca14165b532c0c3eea98d8e27469c9b4a0cec709283f08de2122fe60c5",
+    "src/cdp.mjs": "00a4dfe4670fe2cb441c1e268f8d0d2a6860730ed71507d2709008cdb9e82436",
+    "src/glb-quality.mjs": "cac451f967857f2193520cdf13c0ccd2152f4034fc9e9eeb04ad4768f8ffbe24",
+    "src/integrity.mjs": "5470d94bca8e500a7e7aec11d4a6f44e7e4a962d480e151100b92dd7b61cee25",
+    "src/joints-quality.mjs": "52c43ef9d864532182709cd47f65f69599b220b4de8d95e846c38c4462f71d17",
+    "src/lease.mjs": "d997cd5e2311f846ebbdaf98c5168f34c3e2f80df1febb75972efdc19831e99a",
+    "src/quality.mjs": "f99831a9b782e1b88563196d870a04a79785660b3656839ba29d7083a019c4a7",
+    "src/server.mjs": "2482ca266130ab115a5ecd19b33ef65c2ea2bf12d0b52b1c2a0fa2b9c45effe6",
+    "src/session-recovery.mjs": "beb277511c4d51c81df2c6fdc7d213f6424a2eaa0706e7823d8c9d2a3605ef6d",
+    "src/shutdown.mjs": "bcb29f0b02c6b01a32150d8fa032ba1b0826269af04cb73ef5e6e24bc9e262bf",
+    "src/workflow-v02.mjs": "bde472b6414318374d1138f3c26c1c0fb6103416ac870057532fc84d7396a5ba",
+    "src/workflow-v03.mjs": "e4635f4d1bb54b826a038ea27c11a5b947ecf217ce3ef559ef0d42477e484e59",
+    "src/workflow-v04.mjs": "38e92ae908e42110c498475691682a2a6476583d8c26764f9dd64c310a9e2054",
+    "src/workflow.mjs": "8afc01632faa29c3d25a2a5a8441ac647726ea55b3d81bee47197c30de9a2c53",
+    "scripts/apply_v03.py": "1c267411f4c51a62d2d1271fdfef7d6e181b610aaa7cc7f6424315aab876a813",
+    "scripts/base_gate.py": "e992d1f3a323ed3694bf71da831cb4edc5b70fa18dfa8fd990162623aebcbf4f",
+    "scripts/client_queue.py": "fdec8a62c925b3e8d3f39e2a0ece26f7b5298aecaf74d6ec4cddcd36120094ac",
+    "scripts/create_nico_completion_receipt.py": "9750af247c98319f831d0a0658a57fb5b14d63ce82eac7c0d578e14216e8ac43",
+    "scripts/finish_fixes15_report.py": "ecbcb9008b474ccfe3a1e27b87527c0396ffb0d6c6ccb3e37539066460601cee",
+    "scripts/history_checkpoint.py": "f917cec1a61393b55a537f63ae2281903e1a040e026b265017f28cc5c6beb335",
+    "scripts/launch_detached.py": "bfa880bab2d3ad96edb69db7d9d4c71815e5b29ab7657987c7e3207a8e58cee3",
+    "scripts/package_v03.py": "a8ed1bd9c2356e97b6ad45dd9abce7469c5da97e36dcb3cd9ba3e2588a3a5cf7",
+    "scripts/patch_build_recovery.py": "204db539f05fe756a3c72434a2b1ccc426f66e5845c0e97a74fdc5ce5f9d62da",
+    "scripts/read_history.py": "e83fc66fdcae4b5c9f23aeb9aa1fd7bb9aa56b5fe919e35ba96b0a117f4a9268",
+    "scripts/separate_accurig_plugin.py": "d151dd5192d662c7cf41de5bbf1406f5f938d4850c50fc0472501a4ecd1bb159",
+    "scripts/validate_poses.py": "f0a79b903c0dbb78b8cd84b72f8121485fb6bfed9680e4473b9508ed782ff002",
+    "scripts/validate_poses_v03.py": "fbf606bed6522fecfc88d5073350d222a02d3eea870f320d429775b78bcdd609",
+    "registry_state.py": "0ca0c39652d13a0ab5c387c5a07a90fa7170083c9e4af3a7104530fa31c127fc",
+    "scripts/external_review.py": "229ffb7fc356f9e1cfd1e1d6cfab72dda4fa246b233e175258f2bee7ea1bf2f9"
+  },
+  "control_version": "0.4.0",
+  "tools": 24
+}

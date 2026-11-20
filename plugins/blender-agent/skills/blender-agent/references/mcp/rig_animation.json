@@ -1,0 +1,19 @@
+{
+  "goal": "Insert location keys and verify interpolation at a real frame",
+  "preconditions": [
+    "Authorized target obj exists; adapt its reference and restore any production frame/state as needed"
+  ],
+  "code": "import bpy\nobj=bpy.data.objects.get('RecipeQuad');assert obj is not None\nobj.location.x=0;obj.keyframe_insert(data_path='location',frame=1)\nobj.location.x=2;obj.keyframe_insert(data_path='location',frame=11)\nbpy.context.scene.frame_set(6);bpy.context.view_layer.update()\nassert abs(obj.location.x-1)<1e-5\nresult={'frame':6,'location_x':obj.location.x}\n",
+  "checks": [
+    "Evaluate at frame6; verify locationX=1",
+    "For a rig, also compare deformed geometry in multiple representative poses"
+  ],
+  "limits": [
+    "This executable recipe tests keyed object animation only",
+    "A single keyed object does not validate a character rig, gait or lip sync"
+  ],
+  "topic": "rig_animation",
+  "blender_version": "5.2.1 LTS",
+  "blender_build": "9e2066aef7ef",
+  "validation": "Executable recipe tested via MCP in a fresh isolated session on Blender5.2.1LTS; see knowledge-acceptance.json. Limits remain as documented."
+}

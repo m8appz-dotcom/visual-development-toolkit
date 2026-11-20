@@ -1,0 +1,20 @@
+{
+  "name": "accurig-control",
+  "version": "0.4.0",
+  "description": "Control AccuRIG through MCP: load models, correct joints, generate rigs, validate poses and export.",
+  "skills": "./skills/",
+  "mcpServers": "./mcp.json",
+  "interface": {
+    "displayName": "AccuRIG",
+    "shortDescription": "Rigging y validación de personajes",
+    "longDescription": "Controla AccuRIG mediante su MCP: carga modelos, corrige articulaciones, genera el rig, valida poses y exporta. Incluye la skill accurig-control con selección automática.",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Carga mi modelo en AccuRIG, revisa las articulaciones, valida el rig y expórtalo."
+    ]
+  }
+}

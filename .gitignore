@@ -33,9 +33,17 @@ windows/AssetBridge/obj/
 windows/AssetBridge/publish/
 **/__pycache__/
 **/*.pyc
-**/*.Native.csproj
 fixtures/managed/bin/
 fixtures/managed/obj/
 fixtures/native/game_logic
 *.zip
 
+
+# Installed caches, local state and generated packages
+codex-plugin-cache/
+accurig-control-mcp/data/
+accurig-control-mcp/outputs/
+accurig-control-mcp/reports/
+accurig-control-mcp/backups/
+**/build/lib/
+**/.pytest_cache/

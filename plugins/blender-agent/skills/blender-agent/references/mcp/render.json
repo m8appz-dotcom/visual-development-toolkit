@@ -1,0 +1,46 @@
+{
+  "goal": "Choose a measured preview/final budget and inspect a real camera render",
+  "preconditions": [
+    "A camera/subject/light setup already exists",
+    "Only change settings authorized for that target or use an isolated copy"
+  ],
+  "code": "import bpy\ns=bpy.context.scene;assert s.camera is not None\nresult={'engine':s.render.engine,'camera':s.camera.name,'resolution':[s.render.resolution_x,s.render.resolution_y,s.render.resolution_percentage],\n 'view_transform':s.view_settings.view_transform,'cycles_samples':s.cycles.samples,'adaptive':s.cycles.use_adaptive_sampling,'denoising':s.cycles.use_denoising}\n",
+  "steps": [
+    "Inspect camera/silhouette before fine detail",
+    "Check exposure, contact shadow, material separation and missing resources",
+    "Use render_thumbnail_to_path for previews up to320px, render_viewport_to_path for the scene-camera final render",
+    "Use an isolated durable job for longer renders; set explicit resolution/samples and measure elapsed time",
+    "Open the original final image and correct visible defects in the scene, then rerender"
+  ],
+  "checks": [
+    "Subject framed without accidental crop",
+    "No unacceptable noise or lost fine detail at delivery size",
+    "Saved .blend and final image belong to the same accepted revision"
+  ],
+  "limits": [
+    "No universal sample count guarantees quality",
+    "A rendered file or color-range statistic is not perceptual acceptance",
+    "CPU/GPU speed must be measured in the real scene/device",
+    "Static RNA enum_items may be empty for dynamic device choices; inspect actual devices and test execution"
+  ],
+  "topic": "render",
+  "blender_version": "5.2.1 LTS",
+  "blender_build": "9e2066aef7ef",
+  "validation": "Render inspection code executed; camera renders and OptiX configuration tested in isolated processes on X. Device/performance is machine and scene specific.",
+  "device_probe_code": "import bpy\nprefs=bpy.context.preferences.addons['cycles'].preferences\nprefs.get_devices()\nresult={'configured_backend':prefs.compute_device_type,'devices':[{'name':d.name,'type':d.type,'enabled':d.use} for d in prefs.devices]}\n",
+  "configure_optix_code": "import bpy\n# Only in an isolated task process after an OptiX device is detected. Never save_userpref.\nprefs=bpy.context.preferences.addons['cycles'].preferences\nprefs.compute_device_type='OPTIX';prefs.get_devices()\nassert any(d.type=='OPTIX' for d in prefs.devices),'No OptiX device available'\nfor device in prefs.devices: device.use=(device.type=='OPTIX')\nbpy.context.scene.cycles.device='GPU'\nresult={'backend':'OPTIX','devices':[d.name for d in prefs.devices if d.use]}\n",
+  "measured_example": {
+    "host": "X",
+    "device": "NVIDIA GeForce RTX 3060",
+    "cpu_render_seconds": 82.3166688,
+    "optix_render_seconds": 16.7209859,
+    "resolution": [
+      1200,
+      900
+    ],
+    "max_samples": 64,
+    "seed": 27,
+    "scope": "One static product scene; construction and rendering measured separately",
+    "quality": "CPU and OptiX renders inspected at delivery resolution; tiny numerical differences, no material visual defect observed"
+  }
+}

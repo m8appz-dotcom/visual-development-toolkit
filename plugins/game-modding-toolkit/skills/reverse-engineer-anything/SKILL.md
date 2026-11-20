@@ -3,8 +3,9 @@ name: reverse-engineer-anything
 description: Reverse engineer native, managed, Electron/JavaScript, packaged, firmware, and browser targets with REA. Use shipped-artifact or requested runtime evidence to explain features, compare versions, decompile code, or guide a reconstruction. Skip REA for ordinary source-repository architecture analysis.
 metadata:
   version: "27"
-  tool_count: 133
-  catalog_digest: "f2d8d03be076d9b0483e6a167cc695f91302b6155ef6bba040d33917062c866c"
+  catalog_scope: "X / REA 4.1.0 snapshot; discover schemas per host"
+  tool_count: 141
+  catalog_digest: "cac555610e50bdab4982435ae94cb5c2101dafe35997544f0125dadc7c0c3f77"
 ---
 
 # REA
@@ -27,45 +28,28 @@ a skill installed from repository main may describe capabilities absent from
 an older npm release. Keep complete inline Evidence when that server does not
 advertise retained references.
 
-When tools are absent or registration is stale:
+When tools are absent or registration is stale, inspect this plugin's actual
+mcp.json and host-specific runtime first. X and Bobi are separate installations;
+read the environment reference in the modding-lab skill before using saved paths.
+Preserve the existing patched REA and selected provider. Do not invoke npx latest
+or replace the runtime to repair a connection. Reconnect the affected MCP and
+check its advertised schemas. A client without tools is distinct from a missing
+analysis provider. The native-only agent helper and its limits are described in
+visual-development-agents/references/local-runtime.md.
 
-1. Diagnose without changing files. For Codex, run
-   `npx -y rea-agents@latest doctor --client codex --json`. Substitute the current
-   supported client: `claude_code`, `claude_desktop`, `codex`, `cursor`,
-   `gemini_cli`, `windsurf`, `devin`, `opencode`, `antigravity`, `copilot_cli`,
-   `commandcode`, or `vscode`. If the client is unknown, use `doctor --json` and
-   inspect its registration results before choosing a setup scope.
-2. Distinguish the reason. Missing, malformed, or stale registration needs a
-   scoped configuration repair. An aligned registration with no tools in the
-   active session needs a restart/reconnection; doctor cannot prove that the
-   current agent has connected. A missing provider affects only tasks requiring
-   that provider: static JavaScript inspection needs neither Hopper nor Ghidra,
-   and Android inspection has separate bring-your-own JADX/Java prerequisites.
-3. For a configuration repair, prepare the read-only plan:
-   `npx -y rea-agents@latest setup --client codex --dry-run --json`.
-   Use the current client's ID, show its exact proposed paths, backups, and
-   changes, and obtain approval before setup writes configuration or installs
-   Hopper. Setup normally installs the matching bundled skill too; include that
-   replacement in the reviewed plan. After approval, apply the same scope with
-   `npx -y rea-agents@latest setup --client codex --yes`. Add `--install-hopper`
-   only if that separate installation was needed and explicitly approved.
-4. Restart/reconnect the affected agent. Verify that REA tools actually appear
-   in the session, then resume the original investigation. If they remain
-   absent, inspect the client's MCP launch error rather than repeating setup.
+Use the MCP for supported operations. A CLI fallback is conditional on a verified
+missing MCP operation or connection failure; the examples below are not authority
+to install packages, switch provider, or override user permissions.
 
-REA setup never installs or upgrades Node.js, npm, Homebrew, Java, Ghidra, IDA,
-JADX, Binwalk, or Unblob. Use existing prerequisites; do not install unrelated
-software to repair
-MCP registration. For an unsupported client, use manual stdio registration
-with a version-pinned `rea-agents` package or continue through the CLI.
-
-A concrete CLI fallback for an operator-supplied JavaScript tree or ASAR is:
+A conditional fallback with an already-installed, verified REA executable is:
 
 ```bash
-npx -y rea-agents@latest analyze-javascript-application /absolute/path/to/app --json
+rea analyze-javascript-application /absolute/path/to/app --json
 ```
 
-No MCP registration or native engine is required. Read the returned Evidence,
+Resolve `rea` to the existing executable in this host's runtime; do not fetch a
+replacement if it is absent. For static JavaScript, no native engine is required.
+Read the returned Evidence,
 graph, limitations, and unknowns with the same care as an MCP result; the CLI
 returns the Evidence record directly. This fallback does not establish that
 MCP is configured. Native CLI tasks still require their selected engine.

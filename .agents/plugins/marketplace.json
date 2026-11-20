@@ -15,6 +15,42 @@
         "authentication": "ON_INSTALL"
       },
       "category": "Developer Tools"
+    },
+    {
+      "name": "gta-enhanced-mod-lab",
+      "source": {
+        "source": "local",
+        "path": "./plugins/gta-enhanced-mod-lab"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "accurig-control",
+      "source": {
+        "source": "local",
+        "path": "./plugins/accurig-control"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    },
+    {
+      "name": "blender-agent",
+      "source": {
+        "source": "local",
+        "path": "./plugins/blender-agent"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
     }
   ]
 }

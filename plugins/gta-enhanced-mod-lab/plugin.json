@@ -1,0 +1,37 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "gta-enhanced-mod-lab",
+  "version": "0.4.5",
+  "description": "Inspect GTA V Enhanced assets, run repeatable checks, and manage scoped installation plans with verified backups and rollback.",
+  "author": {
+    "name": "Modding Lab"
+  },
+  "keywords": [
+    "gta",
+    "enhanced",
+    "modding",
+    "rigging",
+    "validation",
+    "rollback"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "GTA Enhanced Mod Lab",
+        "shortDescription": "Check mods and track changes",
+        "longDescription": "Local tools and a researched guide for GTA V Enhanced. Inspect native assets, validate a Gen9 conversion, run negative fixtures, inspect the existing FiveM QA bridge, and apply or undo scoped file plans with backups. Gameplay and visual approval remain separate from static checks.",
+        "developerName": "Modding Lab",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "defaultPrompt": [
+          "Revisa este mod para GTA V Enhanced antes de instalarlo.",
+          "Ejecuta las pruebas del laboratorio y muestra qué falta validar.",
+          "Prepara un plan de instalación con respaldo y rollback."
+        ]
+      }
+    }
+  }
+}

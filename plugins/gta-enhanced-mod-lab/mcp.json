@@ -1,0 +1,29 @@
+{
+  "mcpServers": {
+    "gta-enhanced-mod-lab": {
+      "type": "stdio",
+      "command": "cmd.exe",
+      "args": [
+        "/d",
+        "/c",
+        "C:\\Windows\\System32\\OpenSSH\\ssh.exe",
+        "-T",
+        "-i",
+        "C:\\Users\\kenny\\.ssh\\codex_spark_ed25519",
+        "-o",
+        "BatchMode=yes",
+        "-o",
+        "IdentitiesOnly=yes",
+        "-o",
+        "ConnectTimeout=10",
+        "video@100.82.79.73",
+        "D:\\modding-lab\\windows\\gta-enhanced-mod-lab-venv\\Scripts\\python.exe C:\\Users\\video\\.codex\\plugins\\cache\\modding-lab\\gta-enhanced-mod-lab\\0.4.4\\server\\mod_lab_mcp.py"
+      ],
+      "cwd": "${PLUGIN_ROOT}",
+      "env": {
+        "ProgramData": "C:\\ProgramData"
+      }
+    }
+  },
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
+}

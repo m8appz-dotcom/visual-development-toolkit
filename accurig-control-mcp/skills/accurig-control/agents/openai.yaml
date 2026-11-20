@@ -1,0 +1,12 @@
+interface:
+  display_name: "Control de AccuRIG"
+  short_description: "Rigs, corrección y exportación mediante MCP"
+  default_prompt: "Usa $accurig-control para cargar mi modelo en AccuRIG, revisar el rig, validar las poses y exportarlo mediante el MCP."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "accurig-control"
+      description: "Control nativo de AccuRIG con correcciones, validación y exportación"
+      transport: "stdio"
+policy:
+  allow_implicit_invocation: true

@@ -1,6 +1,6 @@
-# Visual Development Toolkit
+# REA
 
-Create and modify games and apps with visual elements. This Codex plugin combines source-development workflows with asset generation/conversion and optional compiled-code analysis. Version **1.2.0** includes REA, Ghidra, ILSpy, AssetStudio and universal-modder. PS5 projects are excluded.
+Create and modify games and apps with visual elements. This Codex plugin combines source-development workflows with asset generation/conversion and optional compiled-code analysis. Version **1.1.0** includes REA, Ghidra, ILSpy, AssetStudio and universal-modder. PS5 projects are excluded.
 
 Work from source code when available: implement the feature, prepare its visuals, integrate the actual files, then build/run the project and verify the result. Use the analysis tools only when existing compiled artifacts need investigation. Legacy mod workflows remain optional references.
 
@@ -23,11 +23,11 @@ Version **1.2.0** adds a [native Windows runtime](docs/NATIVE-WINDOWS.md) for on
 | `docs/RESULTADOS.md` | Verified 1.1.0 results and limitations |
 | `docs/BOBI-OPERATOR.md` | Operator handoff for the existing Bobi installation |
 
-The internal package ID remains `game-modding-toolkit@modding-lab` for compatibility. Its visible name is **Visual Development Toolkit**. The repository preserves the complete plugin source; large third-party installations are fetched from the official URLs and revisions in the lock file. User projects, credentials, generated logs and runtime binaries are excluded.
+The internal package ID remains `game-modding-toolkit@modding-lab` for compatibility. Its visible name is **REA**. The repository preserves the complete plugin source; large third-party installations are fetched from the official URLs and revisions in the lock file. User projects, credentials, generated logs and runtime binaries are excluded.
 
 ## Existing Bobi installation
 
-The verified runtime is `D:\modding-lab`; the owning installed source remains there. This repository is its versioned source export, not a second running service. Open a new Codex chat and select **Visual Development Toolkit**.
+The verified runtime is `D:\modding-lab`; the owning installed source remains there. This repository is its versioned source export, not a second running service. Open a new Codex chat and select **REA**.
 
 ```text
 Create a playable 2D prototype, prepare and integrate its sprites, and verify the first scene.
@@ -59,3 +59,7 @@ REA 4.1.0 and Ghidra 12.1.4 are connected through separate MCP servers. ILSpy re
 
 See [third-party notices](THIRD_PARTY.md), `upstream-lock.json` and the preserved licenses under the plugin. This repository contains local integration code and adapted workflows alongside upstream material. The third-party licenses apply to their respective files; this export does not assign a new blanket license to the user's integration code.
 
+
+## Source reconciliation
+
+See [the reconciliation and validation record](docs/RECONCILIATION-20261119.md) for the current source candidate and its acceptance scope.
