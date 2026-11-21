@@ -1,0 +1,17 @@
+[
+  {
+    "id": "evidence-story",
+    "title": "From real evidence to a story worth sharing",
+    "hook": "Before you believe this video, look at the evidence."
+  },
+  {
+    "id": "claims-story",
+    "title": "A content pipeline that makes claims reviewable",
+    "hook": "A convincing line still needs evidence."
+  },
+  {
+    "id": "business-story",
+    "title": "Turn technical work into a useful business story",
+    "hook": "Start with work you can actually show."
+  }
+]

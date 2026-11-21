@@ -1,0 +1,17 @@
+[
+  {
+    "question": "What can I explore here?",
+    "answer": "You can follow a sample conversation, inspect each turn, interrupt the text replay, and export the transcript. This example does not record your microphone or contact a live model.",
+    "context": "Example capabilities"
+  },
+  {
+    "question": "How does a live session work?",
+    "answer": "The application separates session access, realtime audio, and explicit tool calls. In a connected deployment, the session service issues temporary access. This demo keeps that connection separate from the conversation you are exploring.",
+    "context": "Session architecture"
+  },
+  {
+    "question": "What happens when I interrupt?",
+    "answer": "An interruption stops this text replay immediately. The transcript keeps the portion you saw and marks it as interrupted. You can replay the complete response or ask another example question.",
+    "context": "Interruptions"
+  }
+]
