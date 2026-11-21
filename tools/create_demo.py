@@ -27,7 +27,9 @@ async def main():
     target.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='toolkit-demo-') as temp:
         work = Path(temp); lab = work / 'lab'; original = work / 'authored.html'
-        original.write_text(SOURCE, encoding='utf-8')
+        # Author the same UTF-8 source on Windows and Unix. Text-mode CRLF
+        # translation would invalidate the recorded identity after Git's LF policy.
+        original.write_bytes(SOURCE.encode('utf-8'))
         before = hashlib.sha256(original.read_bytes()).hexdigest()
         env = {**os.environ, 'MODDING_LAB_ROOT':str(lab), 'MODDING_LAB_MODE':'docker'}
         operations = []
