@@ -1,7 +1,8 @@
 name: Trusted AI review gate
 on:
   pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft]
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, edited]
   issue_comment:
     types: [created, edited, deleted]
   workflow_dispatch:
