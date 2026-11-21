@@ -1,0 +1,17 @@
+{
+  "transport": "actual_mcp_stdio",
+  "operations": [
+    "create_project",
+    "import_target",
+    "package_project",
+    "verify_originals",
+    "reject_outside_project"
+  ],
+  "filesPackaged": 1,
+  "originalUnchanged": true,
+  "archiveContentMatchesOriginal": true,
+  "outsidePathRejected": true,
+  "sourceSha256": "9c0d43a195ef7ad1f63ed512be21d5725117ff86be820c8735706b2b61cb4318",
+  "externalEnginesStarted": false,
+  "paidProviderCalls": 0
+}

@@ -1,95 +1,54 @@
 # Visual Development Toolkit
 
-Create and modify games and apps with visual elements. This Codex plugin combines source-development workflows with asset generation/conversion and optional compiled-code analysis. Version **1.2.0** includes REA, Ghidra, ILSpy, AssetStudio and universal-modder. PS5 projects are excluded.
+A Codex plugin integration layer for source projects, file packaging, optional asset tools, and compiled-artifact inspection. Version **1.2.0** connects MCP adapters to separately installed native Windows or Docker engines. PS5 projects are excluded.
 
-Work from source code when available: implement the feature, prepare its visuals, integrate the actual files, then build/run the project and verify the result. Use the analysis tools only when existing compiled artifacts need investigation. Legacy mod workflows remain optional references.
+## Demonstration
 
-Version **1.2.0** adds a [native Windows runtime](docs/NATIVE-WINDOWS.md) for on-demand installation on X and Titan. The earlier 1.1.0 evidence and Bobi handoff remain historical records; the existing Bobi Docker runtime is preserved.
+![Application output from the documented walkthrough](docs/images/demo.png)
 
-## Architecture and engineering review
+See the [reproducible walkthrough and its validation scope](docs/DEMO.md).
+
+## Project direction and use
+
+[Kenneth Yepez](https://github.com/kennethyepez) directs the requirements, architecture, integration, and validation of this toolkit's integration layer. AI coding agents implement code under his direction. Integrated engines retain their upstream authorship and licenses.
+
+See [use and licensing](LICENSE.md), [contributing](CONTRIBUTING.md), and [security reporting](SECURITY.md).
+
+## Portable quickstart
+
+Review the source and exercise the portable MCP gateway before installing any native engine. Requires Python 3.13; the walkthrough does not start Docker, Ghidra, or REA and does not call a paid provider.
+
+```bash
+python -m venv .venv
+# Activate .venv using your shell, then:
+python -m pip install -r requirements-dev.txt
+python -m unittest discover -s tests -v
+python tools/create_demo.py
+python -m http.server 8000 --bind 127.0.0.1 --directory docs/examples
+```
+
+Open `http://127.0.0.1:8000/walkthrough.html`. The example uses actual MCP stdio requests to create an isolated project, import an authored HTML file, package it, verify byte integrity, and reject a path outside the project. It does not establish native engine compatibility.
+
+## Architecture and review
 
 ```mermaid
 flowchart LR
-    A[Codex plugin and skills] --> B[MCP adapters]
-    B --> C[Native Windows engines]
-    B --> D[Docker engines]
-    C --> E[Project files and analysis artifacts]
-    D --> E
+  A[Codex plugin and skills] --> B[MCP adapters]
+  B --> C[Portable project gateway]
+  B --> D[Optional native engines]
+  B --> E[Optional Docker engines]
 ```
 
-The repository's integration layer connects agent-facing tools to runtimes with different capabilities. Windows and Docker modes share a plugin interface; engine support depends on the runtime and target format.
+Start with [lab_mcp.py](plugins/game-modding-toolkit/server/lab_mcp.py), [native_mcp.py](plugins/game-modding-toolkit/server/native_mcp.py), and the [portable integration tests](tests/test_portable_gateway.py). The [plugin manifest](plugins/game-modding-toolkit/.codex-plugin/plugin.json) and [marketplace](.agents/plugins/marketplace.json) preserve the internal package ID `game-modding-toolkit@modding-lab` for compatibility.
 
-Start a code review with:
+## Optional engines
 
-- [Native MCP adapter](plugins/game-modding-toolkit/server/native_mcp.py) and [lab MCP adapter](plugins/game-modding-toolkit/server/lab_mcp.py).
-- [Plugin manifest](plugins/game-modding-toolkit/.codex-plugin/plugin.json) and [Windows runtime preparation](setup_native_runtime.py).
-- [Authored MCP integration checks](test_plugin.py), [native-runtime checks](test_native_plugin.py), and [visual workflow checks](test_visual_development.py).
-- [Upstream revisions](upstream-lock.json), [native tool pins](native-tool-lock.json), and [provenance](THIRD_PARTY.md).
+Choose the [Docker setup guide](docs/INSTALL-WINDOWS.md) or [native Windows guide](docs/NATIVE-WINDOWS.md) only when the target needs those engines. Inspect the Docker plan with `python setup_runtime.py --plan --build --install` before authorizing installation. The native downloader performs installation; it has no plan-only mode. Neither installer is required for the portable example.
 
-The integration code, manifests, launchers, and workflows are the focus of this project. REA, Ghidra, ILSpy, AssetStudio, and the other integrated engines retain their upstream provenance; their underlying capabilities are not presented as newly authored here.
+REA's Windows native PE provider is experimental and read-only; support differs from Linux. Fal and other generation providers require separately configured credentials and can incur charges. Source publication does not authorize paid calls or work on third-party binaries.
 
-## Reproducible entry point
+## Provenance and historical evidence
 
-For Windows, inspect the proposed Docker setup without starting the installation:
+[THIRD_PARTY.md](THIRD_PARTY.md), [upstream-lock.json](upstream-lock.json), and [native-tool-lock.json](native-tool-lock.json) identify upstream engines and pinned downloads. Their underlying capabilities and authorship are separate from this integration layer.
 
-```powershell
-python setup_runtime.py --plan --build --install
-```
-
-Then choose the [Docker installation guide](docs/INSTALL-WINDOWS.md) or the [native Windows guide](docs/NATIVE-WINDOWS.md). The native guide describes the private runtime and its prerequisites. The integration test scripts require prepared runtimes and fixtures; they are not dependency-free checks of a fresh clone.
-
-The [recorded results](docs/RESULTADOS.md) and [X/Titan results](docs/RESULTADOS-X-TITAN.md) describe specific historical installations. A fresh-machine rebuild and any paid generation need separate validation.
-
-## Contents
-
-| Path | Purpose |
-|---|---|
-| `plugins/game-modding-toolkit/` | Complete plugin package: manifests, 10 active skills, MCP launchers, knowledge, examples and licenses |
-| `.agents/plugins/marketplace.json` | Local Codex marketplace |
-| `windows/AssetBridge/` | Source for the Windows AssetStudio console adapter |
-| `Dockerfile`, `Dockerfile.fix`, `compose.yaml` | Resource-limited analysis backend and documented Ghidra/REA repairs |
-| `upstream-lock.json` | Seven upstream commits and SHA-256 hashes of official runtime/tool downloads |
-| `setup_runtime.py` | Windows runtime preparation, optional Docker build and installation |
-| `configure_plugin.py` | Connect the source plugin to an existing runtime |
-| `fixtures/`, `test_*.py` | Authored fixtures and actual MCP checks |
-| `docs/INSTALL-WINDOWS.md` | Setup, recovery and rollback |
-| `docs/USO-ES.md` | Spanish usage and setup guidance |
-| `docs/RESULTADOS.md` | Verified 1.1.0 results and limitations |
-| `docs/BOBI-OPERATOR.md` | Operator handoff for the existing Bobi installation |
-
-The internal package ID remains `game-modding-toolkit@modding-lab` for compatibility. Its visible name is **Visual Development Toolkit**. The repository preserves the complete plugin source; large third-party installations are fetched from the official URLs and revisions in the lock file. User projects, credentials, generated logs and runtime binaries are excluded.
-
-## Existing Bobi installation
-
-The verified runtime is `D:\modding-lab`; the owning installed source remains there. This repository is its versioned source export, not a second running service. Open a new Codex chat and select **Visual Development Toolkit**.
-
-```text
-Create a playable 2D prototype, prepare and integrate its sprites, and verify the first scene.
-Improve this app with consistent icons and illustrations, integrate them into its components, and check the screens.
-Modify this source project and validate the changed behavior in its real runtime.
-```
-
-## Another Windows machine
-
-Read [Windows setup](docs/INSTALL-WINDOWS.md) before preparing a new runtime. Dependencies: Windows x64, Python 3.12+, Git, .NET 8 Desktop Runtime, Codex and Docker Desktop in Linux-container mode. FFmpeg is needed on Windows for native capture/recording. Allow enough space for the SDKs, archives, source checkouts and Docker images: the original lab used about 4.7 GiB of files plus a 4.7 GiB image; builds/caches need additional space.
-
-From a clone of this repository, preview the steps first:
-
-```powershell
-python setup_runtime.py --plan --build --install
-# Downloads/installs dependencies, builds Docker and installs the plugin:
-python setup_runtime.py --build --install
-```
-
-The 1.1.0 plugin and existing Bobi components have runtime evidence: **17 targeted update checks**, plus **32 earlier component checks**. The repository's new setup orchestration was checked for syntax/configuration; a full fresh-machine rebuild has not been executed. Package registries and upstream availability can change even with pinned versions.
-
-## Optional generation and rendering
-
-Fal runs in the cloud, requires `FAL_KEY`, and charges per model/use. Configure the key in the local environment; never commit it. No paid generation was performed in the recorded checks. Blender must be configured for 3D-to-sprite rendering; ComfyUI requires its own available server. These requirements do not prevent ordinary source development or local sprite processing.
-
-REA 4.1.0 and Ghidra 12.1.4 are connected through separate MCP servers. ILSpy recovers managed .NET code, not IL2CPP source. AssetStudio's original support range is Unity 3.4–2022.1; PNG/text/audio/OBJ export uses the included adapter, while FBX/animation remains in the original GUI and was not exercised in these checks. Decompilation is evidence about compiled behavior, not recovery of the original repository.
-
-## Licenses and provenance
-
-See [third-party notices](THIRD_PARTY.md), `upstream-lock.json` and the preserved licenses under the plugin. This repository contains local integration code and adapted workflows alongside upstream material. The third-party licenses apply to their respective files; this export does not assign a new blanket license to the user's integration code.
-
+Machine-specific operator notes and earlier runtime checks are preserved in [docs/history](docs/history/README.md). Those records do not prove a fresh-machine installation. User projects, credentials, runtime binaries, and generated caches are excluded.

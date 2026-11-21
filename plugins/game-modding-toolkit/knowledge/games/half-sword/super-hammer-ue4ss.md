@@ -107,7 +107,7 @@ tags: [ue4ss, lua, shop, merchant, weapon-passport, damage-multiplier, blueprint
 3. **The damage:**
    - Register a post-hook on `/Game/Character/Blueprints/Willie_BP.Willie_BP_C:Get Damage`.
    - When raw or cut > 0 and the hitting component's owner has the marked passport (and isn't the wielder
-     itself), call `victim["Get Damage"](...)` again with the same arguments, `raw*(M-1)` and
+     itself), call `victim["Get Damage"]()` again with the same arguments, `raw*(M-1)` and
      `cut*(M-1)`, and `{}` for the out param.
    - Guard against re-entry with a flag.
 4. Play: Tavern → Handel → Handel. The Super Hammer is the last row. Buy it, then equip it from the chest

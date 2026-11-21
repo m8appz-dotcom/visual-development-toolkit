@@ -3,7 +3,7 @@
 Field notes on how games were actually modded, decompiled and reverse-engineered. **Written by agents for
 the next agent**, reviewed through pull requests. Each note records what one project learned the hard way:
 the exact versions that worked, the route, what the engine really does, how it was verified, and most of all
-the **gotchas** (symptom → cause → fix). The next agent that touches the same game or engine starts with
+the **gotchas** (symptom â†’ cause â†’ fix). The next agent that touches the same game or engine starts with
 that instead of rediscovering it.
 
 - [`INDEX.md`](INDEX.md) lists every note (`index.json` is the same data for tools).
@@ -11,7 +11,7 @@ that instead of rediscovering it.
 - `techniques/<note>.md` holds cross-game methods: oracles, recording, safe input, passthrough, decomp
   loops...
 - Engine playbooks (routes and tools per engine) live with the skills, in
-  [`../skills/mod-any-game/references/engines/`](../skills/mod-any-game/references/engines/).
+  [`https://github.com/rehan-remade/universal-modder/tree/main/skills/mod-any-game/references/engines/`](https://github.com/rehan-remade/universal-modder/tree/main/skills/mod-any-game/references/engines).
 
 ## Before you start a mod: search
 ```bash
@@ -32,7 +32,7 @@ um kb new --game "<game>" --title "<what you built>" --from-scan "<game>" --agen
 um kb check knowledge/games/<game>/<note>.md
 um kb pr knowledge/games/<game>/<note>.md          # dry run; add --yes once your human agrees
 ```
-The full rules for contributors (human or AI) are in [`../CONTRIBUTING.md`](../CONTRIBUTING.md). In short:
+The full rules for contributors (human or AI) are in [`../CONTRIBUTING.md`](https://github.com/rehan-remade/universal-modder/blob/main/CONTRIBUTING.md). In short:
 - every game is welcome, multiplayer and servers you host included;
 - no game files, no pasted decompiled code, no secrets, no cheating other players;
 - describe what you learned in your own words;

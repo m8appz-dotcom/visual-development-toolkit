@@ -44,5 +44,5 @@ Fal requiere tu `FAL_KEY` y cobra por uso. No se hicieron generaciones pagadas e
 
 ## Evidencia
 
-[RESULTADOS.md](RESULTADOS.md) registra **17 comprobaciones de la actualización** y **32 comprobaciones previas de componentes**. Se verificaron conexiones MCP, procesamiento de un icono, empaquetado e integridad de originales. Los archivos de prueba son propios; no acreditan compatibilidad con cualquier juego/app ni sustituyen la revisión de tu proyecto real.
+[RESULTADOS.md](history/RESULTADOS.md) registra **17 comprobaciones de la actualización** y **32 comprobaciones previas de componentes**. Se verificaron conexiones MCP, procesamiento de un icono, empaquetado e integridad de originales. Los archivos de prueba son propios; no acreditan compatibilidad con cualquier juego/app ni sustituyen la revisión de tu proyecto real.
 
