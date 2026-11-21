@@ -52,3 +52,7 @@ REA's Windows native PE provider is experimental and read-only; support differs 
 [THIRD_PARTY.md](THIRD_PARTY.md), [upstream-lock.json](upstream-lock.json), and [native-tool-lock.json](native-tool-lock.json) identify upstream engines and pinned downloads. Their underlying capabilities and authorship are separate from this integration layer.
 
 Machine-specific operator notes and earlier runtime checks are preserved in [docs/history](docs/history/README.md). Those records do not prove a fresh-machine installation. User projects, credentials, runtime binaries, and generated caches are excluded.
+
+## Reviewed delivery
+
+See the [delivery workflow](docs/DELIVERY.md) for acceptance criteria, commit boundaries, identified AI/human review, protected integration, and source provenance.
