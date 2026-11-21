@@ -6,6 +6,40 @@ Work from source code when available: implement the feature, prepare its visuals
 
 Version **1.2.0** adds a [native Windows runtime](docs/NATIVE-WINDOWS.md) for on-demand installation on X and Titan. The earlier 1.1.0 evidence and Bobi handoff remain historical records; the existing Bobi Docker runtime is preserved.
 
+## Architecture and engineering review
+
+```mermaid
+flowchart LR
+    A[Codex plugin and skills] --> B[MCP adapters]
+    B --> C[Native Windows engines]
+    B --> D[Docker engines]
+    C --> E[Project files and analysis artifacts]
+    D --> E
+```
+
+The repository's integration layer connects agent-facing tools to runtimes with different capabilities. Windows and Docker modes share a plugin interface; engine support depends on the runtime and target format.
+
+Start a code review with:
+
+- [Native MCP adapter](plugins/game-modding-toolkit/server/native_mcp.py) and [lab MCP adapter](plugins/game-modding-toolkit/server/lab_mcp.py).
+- [Plugin manifest](plugins/game-modding-toolkit/.codex-plugin/plugin.json) and [Windows runtime preparation](setup_native_runtime.py).
+- [Authored MCP integration checks](test_plugin.py), [native-runtime checks](test_native_plugin.py), and [visual workflow checks](test_visual_development.py).
+- [Upstream revisions](upstream-lock.json), [native tool pins](native-tool-lock.json), and [provenance](THIRD_PARTY.md).
+
+The integration code, manifests, launchers, and workflows are the focus of this project. REA, Ghidra, ILSpy, AssetStudio, and the other integrated engines retain their upstream provenance; their underlying capabilities are not presented as newly authored here.
+
+## Reproducible entry point
+
+For Windows, inspect the proposed Docker setup without starting the installation:
+
+```powershell
+python setup_runtime.py --plan --build --install
+```
+
+Then choose the [Docker installation guide](docs/INSTALL-WINDOWS.md) or the [native Windows guide](docs/NATIVE-WINDOWS.md). The native guide describes the private runtime and its prerequisites. The integration test scripts require prepared runtimes and fixtures; they are not dependency-free checks of a fresh clone.
+
+The [recorded results](docs/RESULTADOS.md) and [X/Titan results](docs/RESULTADOS-X-TITAN.md) describe specific historical installations. A fresh-machine rebuild and any paid generation need separate validation.
+
 ## Contents
 
 | Path | Purpose |
