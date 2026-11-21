@@ -2,6 +2,8 @@
 
 Search, filter or sort the sixteen English collection files. Inspect an original, select files, and compare their SHA-256 with the included manifest. Export a standard ZIP containing the original bytes and a package manifest. Changed files stop packaging.
 
+See [ENGINES.md](ENGINES.md) for the actual engine connection, additional runtime setup, credentials and acceptance limits.
+
 ## Run locally
 
 Requires Node.js 22 or newer and npm. From the repository root:
@@ -33,7 +35,7 @@ The included server integrates FIDO2/WebAuthn for optional private workspace cop
 
 ## Boundaries
 
-This browser example packages its included fixtures. It does not start external creative engines or claim a new MCP stdio execution.
+The included fixtures are imported, verified and packaged through the actual MCP stdio gateway in isolated folders. No native creative application or Docker container is started.
 
 The local server supports its documented localhost origin. This change does not deploy a public service or make these local workspaces production-ready. A public deployment needs a stable HTTPS origin/RP ID, durable protected storage, retention policy and completed holder acceptance. No provider keys or production data are included. No Spark data or services are touched.
 

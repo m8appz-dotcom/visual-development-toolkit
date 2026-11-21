@@ -15,3 +15,9 @@ Corrections during browser review included an editor/navigation overlap in Longf
 Automated checks reject unsigned workspace access, foreign-origin mutations, invalid registration, replayed challenges and unknown credentials. Real holder registration/login/recovery remains pending. Full accessibility certification, physical mobile-device testing, paid/live AI calls, microphone/audio acceptance and finished-video acceptance are not claimed.
 
 Scope limit: This browser example packages its included fixtures. It does not start external creative engines or claim a new MCP stdio execution.
+
+## Connected engine update
+
+Calls the actual FastMCP stdio gateway: create_project, import_target, verify_originals and package_project. Selected paths must be in the committed collection manifest. Every input and archive member is checked against its SHA-256. Source files are copied byte-for-byte; no image transformation occurs.
+
+Gateway negative tests cover origin, protected actions, session ownership, unsupported input, invalid service credentials, safe errors and path containment. Physical holder passkey acceptance remains pending; it is never inferred from these tests.

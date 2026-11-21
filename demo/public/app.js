@@ -1,3 +1,4 @@
+import { runEngine, showEngineResult } from "./engine-client.js";
 import {
   $,
   $$,
@@ -63,31 +64,15 @@ async function verifyOrExport(exporting) {
   result = "";
   render();
   try {
-    const files = [];
-    for (const a of targets) {
-      const bytes = await read(a);
-      files.push({ name: a.path, bytes });
-    }
-    if (exporting) {
-      const manifest = {
-        kind: "authored-english-demo-package",
-        files: targets.map((a) => ({
-          path: a.path,
-          bytes: a.bytes,
-          sha256: a.sha256,
-        })),
-        transformation: "none",
-      };
-      files.push({
-        name: "package-manifest.json",
-        bytes: new TextEncoder().encode(
-          JSON.stringify(manifest, null, 2) + "\n",
-        ),
-      });
-      download("toolkit-example-package.zip", zipStore(files));
-      result = `${targets.length} original files packaged. SHA-256 checked against the included manifest.`;
-    } else
-      result = `${targets.length} of ${artifacts.length} files match the included manifest. No file was changed.`;
+    const job = await runEngine(exporting ? "package" : "verify", {
+      paths: targets.map((a) => a.path),
+    });
+    result = `${job.result.originalsVerified} original ${job.result.originalsVerified === 1 ? "file" : "files"} verified by the toolkit${exporting ? " and packaged without changes" : ""}.`;
+    showEngineResult(
+      exporting ? "Package ready" : "Originals verified",
+      job,
+      `<p>${esc(result)}</p>`,
+    );
     notify(result);
   } catch (e) {
     result = e.message;
@@ -167,7 +152,7 @@ function render() {
       )
       .join(
         "",
-      )}</select></label><button class="text-button" data-select-visible ${busy || !visible.length ? "disabled" : ""}>Select visible</button><button class="text-button" data-clear ${busy || !selected.size ? "disabled" : ""}>Clear selection</button><button data-verify ${busy || !artifacts.length ? "disabled" : ""}>${busy ? "Checking files…" : "Verify originals"}</button><button class="solid" data-package ${busy || !selected.size ? "disabled" : ""}>Export package ↓</button></div></div><main id="main" aria-busy="${busy}"><div class="toolkit-count"><span>English example collection</span><span>${String(visible.length).padStart(2, "0")} / ${artifacts.length}</span></div>${error ? `<div class="empty"><h1>The collection could not load.</h1><p>${esc(error)}</p><button class="solid" data-reload>Retry collection</button></div>` : `<div id="artifact-results" class="artifact-grid ${list ? "as-list" : ""}">${visible.length ? visible.map((a) => `<article class="artifact-item ${selected.has(a.path) ? "is-selected" : ""}"><label class="artifact-select"><input type="checkbox" data-select="${esc(a.path)}" aria-label="Select ${esc(a.label)}" ${selected.has(a.path) ? "checked" : ""} ${busy ? "disabled" : ""}></label><button class="artifact" data-artifact="${a.id}" aria-label="${esc(a.label + " — " + a.group + "/" + a.name)}"><div class="artifact-preview">${thumbnail(a)}</div><div class="artifact-caption"><span>${esc(a.label)}</span><span>${String(a.id + 1).padStart(2, "0")}</span></div><div class="artifact-file"><span>${esc(a.group)}</span><span>${esc(a.name)}</span></div></button></article>`).join("") : '<div class="empty"><h2>No matching files.</h2><p>Try another name or project.</p><button class="text-button" data-reset>Reset filters</button></div>'}</div>`}${result ? `<p class="package-result" role="status">${esc(result)}</p>` : ""}</main><footer class="toolkit-footer"><span>Visual Development Toolkit</span><span>Original bytes preserved · files stay in this browser until exported</span></footer></div>`,
+      )}</select></label><button class="text-button" data-select-visible ${busy || !visible.length ? "disabled" : ""}>Select visible</button><button class="text-button" data-clear ${busy || !selected.size ? "disabled" : ""}>Clear selection</button><button data-verify ${busy || !artifacts.length ? "disabled" : ""}>${busy ? "Checking files…" : "Verify originals"}</button><button class="solid" data-package ${busy || !selected.size ? "disabled" : ""}>Export package ↓</button></div></div><main id="main" aria-busy="${busy}"><div class="toolkit-count"><span>English example collection</span><span>${String(visible.length).padStart(2, "0")} / ${artifacts.length}</span></div>${error ? `<div class="empty"><h1>The collection could not load.</h1><p>${esc(error)}</p><button class="solid" data-reload>Retry collection</button></div>` : `<div id="artifact-results" class="artifact-grid ${list ? "as-list" : ""}">${visible.length ? visible.map((a) => `<article class="artifact-item ${selected.has(a.path) ? "is-selected" : ""}"><label class="artifact-select"><input type="checkbox" data-select="${esc(a.path)}" aria-label="Select ${esc(a.label)}" ${selected.has(a.path) ? "checked" : ""} ${busy ? "disabled" : ""}></label><button class="artifact" data-artifact="${a.id}" aria-label="${esc(a.label + " — " + a.group + "/" + a.name)}"><div class="artifact-preview">${thumbnail(a)}</div><div class="artifact-caption"><span>${esc(a.label)}</span><span>${String(a.id + 1).padStart(2, "0")}</span></div><div class="artifact-file"><span>${esc(a.group)}</span><span>${esc(a.name)}</span></div></button></article>`).join("") : '<div class="empty"><h2>No matching files.</h2><p>Try another name or project.</p><button class="text-button" data-reset>Reset filters</button></div>'}</div>`}${result ? `<p class="package-result" role="status">${esc(result)}</p>` : ""}</main><footer class="toolkit-footer"><span>Visual Development Toolkit</span><span>Original bytes preserved · packages run in an isolated workspace</span></footer></div>`,
     () => {
       $$("[data-type]").forEach(
         (b) =>

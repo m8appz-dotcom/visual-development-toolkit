@@ -1,3 +1,4 @@
+import { engineGateway } from "./engine-gateway.mjs";
 import http from "node:http";
 import {
   readFileSync,
@@ -46,6 +47,7 @@ export function createDemoServer({
   storePath = path.join(HERE, ".demo-state", "workspaces.json"),
   origin = "http://localhost:8875",
   enableCapture = false,
+  engine = null,
 } = {}) {
   const url = new URL(origin);
   if (url.hostname !== "localhost" || url.protocol !== "http:")
@@ -119,12 +121,18 @@ export function createDemoServer({
     }
     return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
   };
+  const handleEngine = engineGateway({
+    engine,
+    origin,
+    stateRoot: path.dirname(storePath),
+    authenticated: signedIn,
+  });
   const server = http.createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
     res.setHeader(
       "Content-Security-Policy",
-      "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'none'; form-action 'self'",
+      "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; media-src 'self' blob:; frame-src 'self'; frame-ancestors 'self'; object-src 'none'; base-uri 'none'; form-action 'self'",
     );
     res.setHeader(
       "Permissions-Policy",
@@ -141,6 +149,14 @@ export function createDemoServer({
       pathname = decodeURIComponent(new URL(req.url, origin).pathname);
     } catch {
       json(res, 400, { error: "That address is not valid." });
+      return;
+    }
+    try {
+      if (await handleEngine(req, res, pathname)) return;
+    } catch {
+      json(res, 500, {
+        error: "The engine request could not finish. Your work is safe.",
+      });
       return;
     }
     if (pathname.startsWith("/auth/")) {
@@ -429,6 +445,7 @@ export function createDemoServer({
     if (req.method === "HEAD") res.end();
     else res.end(readFileSync(file));
   });
+  engine?.attach?.(server, { origin, authenticated: signedIn });
   return server;
 }
 if (
@@ -443,6 +460,7 @@ if (
       ? path.join(HERE, "public")
       : path.join(HERE, "site"),
     enableCapture: process.env.ENABLE_CAPTURE === "1",
+    engine: (await import("./engine-adapter.mjs")).default,
   }).listen(port, "127.0.0.1", () =>
     console.log(`English demos ready at ${origin}`),
   );

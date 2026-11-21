@@ -1,3 +1,5 @@
 node_modules/
 .demo-state/
 captures/
+
+isolated-*.log
