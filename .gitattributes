@@ -1,9 +1,20 @@
+# Text normalization is a separate formatting-only change.
 * text=auto eol=lf
 *.bat text eol=crlf
 *.cmd text eol=crlf
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.glb binary
-*.jar binary
-*.assets binary
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.webp -text
+*.gif -text
+*.ico -text
+*.mp3 -text
+*.wav -text
+*.mp4 -text
+*.webm -text
+*.zip -text
+*.pdf -text
+*.woff -text
+*.woff2 -text
+*.ttf -text
+*.otf -text
