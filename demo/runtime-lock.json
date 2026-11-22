@@ -1,12 +1,12 @@
 {
-  "version": "1.1.2",
+  "version": "1.1.3",
   "upstream": {
     "repository": "m8appz-dotcom/visual-development-toolkit",
-    "commit": "050af024fccfab29929759bd6d9be28296b733a8",
+    "commit": "364d40504793e74f5a64d8938848c2c64edf2283",
     "base_path": "demo"
   },
   "files": {
-    "server.mjs": "554942d735131afc9b2ba4c47267a7078d7699ca94abd750be8e654951a8280f",
+    "server.mjs": "3001aa23089e0a57d74e8f1855212162fff6d35fc1290bbcc828456ca6b414df",
     "engine-gateway.mjs": "18abbc47983fced1ea921cd83f9601d90b3a9ebfb08c63ea7963c5b28a61f86b",
     "process.mjs": "8545e13d1c299461fc98815bacd66f019ab0275e9bbcf63b3b56786d94f06bf4",
     "public/core.js": "a3d9216ad0f4862b36ed568a0fca09176cb7f4c32d2bf2a80293a0f790543d2e",
