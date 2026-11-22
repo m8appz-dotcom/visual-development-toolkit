@@ -2,15 +2,15 @@
 
 A Codex plugin integration layer for source projects, file packaging, optional asset tools, and compiled-artifact inspection. Version **1.2.0** connects MCP adapters to separately installed native Windows or Docker engines. PS5 projects are excluded.
 
-## Interactive English demo
+## See the workspace
 
-[Run the interactive demo](demo/README.md) to explore the approved product interface, local example workflows and downloadable outputs. The isolated demo uses English throughout and preserves the original application below. See its README for the exact example boundaries and passkey acceptance status.
+A searchable source archive with verified originals and reproducible packages.
 
-## Demonstration
+![The current Visual Development Toolkit workspace](docs/images/workspace-desktop.jpg)
 
-![Application output from the documented walkthrough](docs/images/demo.png)
+[Run locally](demo/README.md) · [Desktop and phone views](docs/PRODUCT.md)
 
-See the [reproducible walkthrough and its validation scope](docs/DEMO.md).
+The local example and the connected engine have separate setup instructions and documented limits.
 
 ## Project direction and use
 
