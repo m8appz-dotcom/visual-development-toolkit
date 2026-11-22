@@ -113,6 +113,20 @@ test("engine requests enforce origin, access, session ownership, and safe error 
   assert.equal(created.status, 202);
   const cookie = created.headers["set-cookie"][0].split(";")[0],
     route = "/engine/jobs/" + created.body.id;
+  const renewed = await request(
+    "/engine/run",
+    "POST",
+    {
+      action: "public",
+      data: { value: 8 },
+    },
+    { Cookie: cookie },
+  );
+  assert.equal(renewed.status, 202);
+  const renewal = renewed.headers["set-cookie"][0];
+  assert.equal(renewal.split(";")[0], cookie);
+  assert.match(renewal, /Max-Age=3600/);
+  assert.match(renewal, /HttpOnly; Secure; SameSite=Strict/);
   assert.equal((await request(route)).status, 404);
   let job;
   for (let n = 0; n < 20; n++) {

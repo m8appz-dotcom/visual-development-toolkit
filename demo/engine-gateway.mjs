@@ -31,9 +31,10 @@ export function engineGateway({ engine, origin, stateRoot, authenticated }) {
       .map((v) => v.trim())
       .find((v) => v.startsWith("__Host-engine="))
       ?.slice(14);
-    if (cookie && /^[a-f0-9]{48}$/.test(cookie)) return cookie;
-    if (!create) return null;
-    const token = randomBytes(24).toString("hex");
+    const existing = cookie && /^[a-f0-9]{48}$/.test(cookie) ? cookie : null;
+    if (!create) return existing;
+    // Renew the same owner for each accepted job; never strand older outputs.
+    const token = existing || randomBytes(24).toString("hex");
     res.setHeader(
       "Set-Cookie",
       `__Host-engine=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`,
