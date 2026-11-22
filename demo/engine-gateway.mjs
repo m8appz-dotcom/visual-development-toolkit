@@ -8,6 +8,7 @@ import {
   existsSync,
 } from "node:fs";
 import path from "node:path";
+import { validateJsonValue } from "./process.mjs";
 
 export function engineGateway({
   engine,
@@ -102,7 +103,9 @@ export function engineGateway({
           if (size > 180000) throw Error();
           chunks.push(part);
         }
-        input = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+        input = validateJsonValue(
+          JSON.parse(Buffer.concat(chunks).toString("utf8")),
+        );
       } catch {
         reply(res, 400, {
           error: "The request is unreadable or too large.",

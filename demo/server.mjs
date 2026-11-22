@@ -1,4 +1,5 @@
 import { engineGateway } from "./engine-gateway.mjs";
+import { validateJsonValue } from "./process.mjs";
 import http from "node:http";
 import { isIP } from "node:net";
 import {
@@ -43,6 +44,25 @@ const safeFile = (root, name) => {
   if (!full.startsWith(path.resolve(root) + path.sep)) return null;
   return full;
 };
+function persistWorkspaceCandidate(storePath, candidate) {
+  // Serialize before any shared in-memory state changes or filesystem mutation.
+  const serialized = JSON.stringify(candidate);
+  mkdirSync(path.dirname(storePath), { recursive: true, mode: 0o700 });
+  const temporary = storePath + ".tmp";
+  writeFileSync(temporary, serialized, { mode: 0o600 });
+  renameSync(temporary, storePath);
+  return candidate;
+}
+export function saveWorkspaceCopy(database, user, key, state, storePath) {
+  validateJsonValue(state);
+  if (state === null || typeof state !== "object")
+    throw Error("That workspace could not be saved.");
+  const candidate = {
+    ...database,
+    workspaces: { ...database.workspaces, [user + ":" + key]: state },
+  };
+  return persistWorkspaceCandidate(storePath, candidate);
+}
 export function createDemoServer({
   root = path.join(HERE, "site"),
   storePath = path.join(HERE, ".demo-state", "workspaces.json"),
@@ -89,11 +109,8 @@ export function createDemoServer({
     throw new Error(
       "Unrecognized workspace store. Preserve it and investigate.",
     );
-  const persist = () => {
-    mkdirSync(path.dirname(storePath), { recursive: true, mode: 0o700 });
-    const temporary = storePath + ".tmp";
-    writeFileSync(temporary, JSON.stringify(db), { mode: 0o600 });
-    renameSync(temporary, storePath);
+  const persist = (candidate) => {
+    db = persistWorkspaceCandidate(storePath, candidate);
   };
   const cookies = (req) =>
     Object.fromEntries(
@@ -148,7 +165,9 @@ export function createDemoServer({
         );
       chunks.push(chunk);
     }
-    return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+    return validateJsonValue(
+      JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}"),
+    );
   };
   const handleEngine = engineGateway({
     engine:
@@ -315,13 +334,16 @@ export function createDemoServer({
             throw Error(
               "This workspace has reached its access capacity. Existing passkeys still work.",
             );
-          db.users[expected.user] = expected.record;
-          db.credentials[c.id] = {
+          const credential = {
             ...c,
             publicKey: encode(c.publicKey),
             user: expected.user,
           };
-          persist();
+          persist({
+            ...db,
+            users: { ...db.users, [expected.user]: expected.record },
+            credentials: { ...db.credentials, [c.id]: credential },
+          });
           json(
             res,
             200,
@@ -366,8 +388,16 @@ export function createDemoServer({
           });
           if (!result.verified)
             throw new Error("That passkey could not be verified.");
-          record.counter = result.authenticationInfo.newCounter;
-          persist();
+          persist({
+            ...db,
+            credentials: {
+              ...db.credentials,
+              [input.id]: {
+                ...record,
+                counter: result.authenticationInfo.newCounter,
+              },
+            },
+          });
           json(
             res,
             200,
@@ -405,8 +435,13 @@ export function createDemoServer({
           if (pathname.endsWith("/save")) {
             if (input.state === null || typeof input.state !== "object")
               throw new Error("That workspace could not be saved.");
-            db.workspaces[key] = input.state;
-            persist();
+            db = saveWorkspaceCopy(
+              db,
+              session.user,
+              input.key,
+              input.state,
+              storePath,
+            );
             json(res, 200, { saved: true });
           } else json(res, 200, { state: db.workspaces[key] ?? null });
           return;
