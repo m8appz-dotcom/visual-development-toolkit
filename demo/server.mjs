@@ -57,6 +57,7 @@ export const workspaceStorageLimits = Object.freeze({
   recordBytes: 8 * 1024,
   userRecordBytes: 512,
   storeBytes: 8 * 1024 * 1024,
+  recoveryStoreBytes: 24 * 1024 * 1024,
 });
 export function registrationCapacityReached(database, user, legacy = null) {
   return (
@@ -314,6 +315,13 @@ function checkedLegacyProfile(database, profile) {
     { bytes: 0, nodes: 0 },
   );
   if (
+    aggregate.bytes > workspaceStorageLimits.storeBytes ||
+    aggregate.nodes > workspaceStorageLimits.storeBytes
+  )
+    throw Error(
+      "Recovery allocations exceed the original file budget. Preserve the store for offline recovery.",
+    );
+  if (
     profile.aggregate &&
     (profile.aggregate.bytes !== aggregate.bytes ||
       profile.aggregate.nodes !== aggregate.nodes)
@@ -366,14 +374,38 @@ function checkedLegacyProfile(database, profile) {
   validateWorkspaceStorage(database, profile);
   return profile;
 }
+function checkedStartupStore(database, legacy) {
+  const candidate = legacy
+    ? { ...database, legacyAdmission: legacy }
+    : database;
+  const limit = legacy
+    ? workspaceStorageLimits.recoveryStoreBytes
+    : workspaceStorageLimits.storeBytes;
+  if (Buffer.byteLength(JSON.stringify(candidate)) > limit)
+    throw Error(
+      "Recovery metadata exceeds its bounded headroom. Preserve the store for offline recovery.",
+    );
+  return { database, legacy };
+}
 export function loadWorkspaceStore(storePath) {
   let database = { version: 1, users: {}, credentials: {}, workspaces: {} };
   if (existsSync(storePath)) {
-    if (statSync(storePath).size > workspaceStorageLimits.storeBytes)
+    const size = statSync(storePath).size;
+    if (size > workspaceStorageLimits.recoveryStoreBytes)
       throw Error(
         "Workspace store exceeds its safe capacity. Preserve it for offline recovery.",
       );
-    database = JSON.parse(readFileSync(storePath, "utf8"));
+    try {
+      database = JSON.parse(readFileSync(storePath, "utf8"));
+    } catch {
+      throw Error(
+        "Unrecognized workspace store. Preserve it for offline recovery.",
+      );
+    }
+    if (size > workspaceStorageLimits.storeBytes && !database.legacyAdmission)
+      throw Error(
+        "Original workspace store exceeds its safe capacity. Preserve it for offline recovery.",
+      );
   }
   if (
     database.version !== 1 ||
@@ -383,13 +415,13 @@ export function loadWorkspaceStore(storePath) {
   )
     throw Error("Unrecognized workspace store. Preserve it and investigate.");
   if (database.legacyAdmission)
-    return {
+    return checkedStartupStore(
       database,
-      legacy: checkedLegacyProfile(database, database.legacyAdmission),
-    };
+      checkedLegacyProfile(database, database.legacyAdmission),
+    );
   try {
     validateWorkspaceStorage(database);
-    return { database, legacy: null };
+    return checkedStartupStore(database, null);
   } catch {
     // Only a valid bounded previous-format store is grandfathered. Do not rewrite on startup.
     validateWorkspaceStorage(database, {});
@@ -408,7 +440,7 @@ export function loadWorkspaceStore(storePath) {
       }),
       { bytes: 0, nodes: 0 },
     );
-    return { database, legacy };
+    return checkedStartupStore(database, legacy);
   }
 }
 export function persistWorkspaceCandidate(storePath, candidate, legacy = null) {
@@ -423,7 +455,12 @@ export function persistWorkspaceCandidate(storePath, candidate, legacy = null) {
     );
   validateWorkspaceStorage(candidate, legacy);
   const serialized = JSON.stringify(candidate);
-  if (Buffer.byteLength(serialized) > workspaceStorageLimits.storeBytes)
+  if (
+    Buffer.byteLength(serialized) >
+    (legacy
+      ? workspaceStorageLimits.recoveryStoreBytes
+      : workspaceStorageLimits.storeBytes)
+  )
     throw Error(
       "Saved workspace storage is full. Export a local copy and try again.",
     );

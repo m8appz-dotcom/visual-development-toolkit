@@ -21,6 +21,7 @@ import {
   requireInvitation,
   commitInvitedRegistration,
   registrationCapacityReached,
+  workspaceStorageLimits,
 } from "../server.mjs";
 
 // All identities/credentials here are plain storage fixtures, not authenticator simulations.
@@ -222,6 +223,55 @@ test("original-format aggregate and access allocations survive stricter global l
     );
     assert.equal(readFileSync(file, "utf8"), current);
   }
+});
+test("a near-limit original store retains headroom for its first login update and restart", (t) => {
+  const file = fixture(t),
+    database = empty();
+  database.users.first = { id: "first" };
+  database.credentials.key = {
+    id: "key",
+    user: "first",
+    publicKey: "fixture",
+    counter: 9,
+  };
+  database.workspaces["first:content"] = { draft: "" };
+  const target = workspaceStorageLimits.storeBytes - 128;
+  database.workspaces["first:content"].draft = "x".repeat(
+    target - Buffer.byteLength(JSON.stringify(database)),
+  );
+  const original = JSON.stringify(database);
+  assert.equal(Buffer.byteLength(original), target);
+  writeFileSync(file, original);
+  let loaded = loadWorkspaceStore(file);
+  assert.ok(loaded.legacy);
+  assert.equal(readFileSync(file, "utf8"), original);
+  const candidate = {
+    ...loaded.database,
+    credentials: { key: { ...loaded.database.credentials.key, counter: 10 } },
+  };
+  const saved = persistWorkspaceCandidate(file, candidate, loaded.legacy);
+  const bytes = Buffer.byteLength(readFileSync(file, "utf8"));
+  assert.ok(bytes > workspaceStorageLimits.storeBytes);
+  assert.ok(bytes <= workspaceStorageLimits.recoveryStoreBytes);
+  loaded = loadWorkspaceStore(file);
+  assert.ok(loaded.legacy);
+  assert.equal(loaded.database.credentials.key.counter, 10);
+  assert.equal(
+    loaded.database.workspaces["first:content"].draft,
+    saved.workspaces["first:content"].draft,
+  );
+  assert.throws(
+    () =>
+      saveWorkspaceCopy(
+        loaded.database,
+        "first",
+        "content",
+        { draft: "replace" },
+        file,
+        loaded.legacy,
+      ),
+    /migrate it/,
+  );
 });
 test("legacy recovery stays read-only across restart and rejects shape changes", (t) => {
   const file = fixture(t),
