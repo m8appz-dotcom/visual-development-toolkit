@@ -1,0 +1,14 @@
+[
+  {
+    "claim": "Model output is validated before it is written to the database.",
+    "evidence": "The public architecture places validation before the database write."
+  },
+  {
+    "claim": "Validation and human approval are separate steps.",
+    "evidence": "The example pipeline lists validation followed by human approval."
+  },
+  {
+    "claim": "The example uses public, allowlisted evidence.",
+    "evidence": "The source summary limits this example to public, allowlisted material."
+  }
+]

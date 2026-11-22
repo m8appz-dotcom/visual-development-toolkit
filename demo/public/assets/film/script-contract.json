@@ -1,0 +1,11 @@
+{
+  "language": "en",
+  "script_locked": false,
+  "finished_video": false,
+  "required_before_render": [
+    "nonempty_chapters",
+    "script_hash",
+    "human_review",
+    "selected_footage"
+  ]
+}

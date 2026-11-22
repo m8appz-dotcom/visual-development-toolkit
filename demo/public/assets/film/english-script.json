@@ -1,0 +1,17 @@
+{
+  "title": "How to review a project before publishing it",
+  "hook": "Before you publish a project, check what another person can verify.",
+  "language": "en",
+  "chapters": [
+    {
+      "id": "C01",
+      "title": "Check the starting point",
+      "spoken_text": "Before you publish a project, check what another person can verify. Describe the problem in plain language and choose a small example that represents the work. That example needs a clear input, an observable transformation, and an output someone can inspect. Avoid promising results you have not measured.\n\nDocumentation is part of the product too. A new person needs to know what to install, what to run, and what to expect at the end. If a step depends on an account, an external service, or an extra library, explain that before they start. Offer a test alternative when possible and describe exactly what it demonstrates. Keep personal data out of the example. Use material you own and retain the sources so future changes can be checked."
+    },
+    {
+      "id": "C02",
+      "title": "Keep evidence of the result",
+      "spoken_text": "After you prepare the example, check its instructions in an isolated copy. That helps distinguish what works because of the project from what works only because of your computer configuration. Save the results and connect them to the version you actually tested. A screenshot helps explain the result. Tests show which behavior you checked.\n\nWhen you find a fault, fix its cause and repeat the affected checks. Keep the history so you can explain what changed and why. Do not replace an unfavorable measurement with an optimistic statement. Explain the limits and the next piece of work. By the end of the review, another person should be able to identify the goal, reproduce the example, and understand what remains. That clarity makes decisions easier to discuss and gives people visible evidence to assess."
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "portfolio-english-demos",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check server.mjs && npm test && npm audit --audit-level=low",
+    "format:check": "prettier --check *.mjs public/*.js tests/*.mjs package.json"
+  },
+  "dependencies": {
+    "@simplewebauthn/browser": "14.0.0",
+    "@simplewebauthn/server": "14.1.0"
+  },
+  "devDependencies": {
+    "prettier": "3.10.1"
+  }
+}

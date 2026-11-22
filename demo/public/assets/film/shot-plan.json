@@ -1,0 +1,16 @@
+{
+  "kind": "authored-demo-plan",
+  "selected_footage": false,
+  "chapters": [
+    {
+      "id": "C01",
+      "title": "Check the starting point",
+      "paragraphs": 2
+    },
+    {
+      "id": "C02",
+      "title": "Keep evidence of the result",
+      "paragraphs": 2
+    }
+  ]
+}

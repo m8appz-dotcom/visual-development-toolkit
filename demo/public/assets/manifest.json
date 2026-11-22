@@ -1,0 +1,261 @@
+[
+  {
+    "id": 0,
+    "group": "toolkit",
+    "path": "toolkit/packaged-source.html",
+    "name": "packaged-source.html",
+    "type": "document",
+    "label": "Packaged source",
+    "style": "html",
+    "preview": [
+      "Source packaged",
+      "through MCP"
+    ],
+    "bytes": 214,
+    "sha256": "ded838f8273186f6db9f473a4d243cbdab3402c944b2886fca99ae62a53dba67",
+    "mime": "text/html"
+  },
+  {
+    "id": 1,
+    "group": "content",
+    "path": "content/story-candidates.json",
+    "name": "story-candidates.json",
+    "type": "data",
+    "label": "Story candidates",
+    "style": "script",
+    "preview": [
+      "Evidence",
+      "to story"
+    ],
+    "bytes": 475,
+    "sha256": "8a834285a890a6e74dae7434049571dd896d8930ba1a8ebdf26008f65dfd8eb8",
+    "mime": "application/json"
+  },
+  {
+    "id": 2,
+    "group": "film",
+    "path": "film/english-script.json",
+    "name": "english-script.json",
+    "type": "data",
+    "label": "English script",
+    "style": "chapter",
+    "preview": [
+      "Check the",
+      "starting point."
+    ],
+    "bytes": 1939,
+    "sha256": "a0004c19e7247b5891147aaaf5915d1f2c85b3a12d8036a994c53720ab951364",
+    "mime": "application/json"
+  },
+  {
+    "id": 3,
+    "group": "film",
+    "path": "film/render-frame.png",
+    "name": "render-frame.png",
+    "type": "image",
+    "label": "Original test frame",
+    "style": "image",
+    "preview": [],
+    "bytes": 60356,
+    "sha256": "7bd49b7c1b0449a20a34f3d4a231046fd043bab78c5f481af205b051e8b4b461",
+    "mime": "image/png"
+  },
+  {
+    "id": 4,
+    "group": "jev",
+    "path": "jev/conversations.json",
+    "name": "conversations.json",
+    "type": "data",
+    "label": "Example conversations",
+    "style": "call",
+    "preview": [
+      "Three calls.",
+      "Three decisions."
+    ],
+    "bytes": 2138,
+    "sha256": "5c4e2b0c84883b6a643e884de563d4d19a4c2ba1b3c1d29103ce53fbb1bcaa63",
+    "mime": "application/json"
+  },
+  {
+    "id": 5,
+    "group": "voice",
+    "path": "voice/conversation.json",
+    "name": "conversation.json",
+    "type": "data",
+    "label": "Conversation replay",
+    "style": "script",
+    "preview": [
+      "Question.",
+      "Context.",
+      "Reply."
+    ],
+    "bytes": 941,
+    "sha256": "9f25471919009a9be200dd25d7710f3f1ea2b263f51486c18d5706a426ca17bc",
+    "mime": "application/json"
+  },
+  {
+    "id": 6,
+    "group": "toolkit",
+    "path": "toolkit/source-evidence.json",
+    "name": "source-evidence.json",
+    "type": "data",
+    "label": "Source identity",
+    "style": "hash",
+    "preview": [
+      "SHA",
+      "256"
+    ],
+    "bytes": 467,
+    "sha256": "2b2ef3be88b3ebcae79c2e84464317aef6ce8e042cedc2bf318d041832641f10",
+    "mime": "application/json"
+  },
+  {
+    "id": 7,
+    "group": "toolkit",
+    "path": "toolkit/workflow.md",
+    "name": "workflow.md",
+    "type": "document",
+    "label": "Packaging workflow",
+    "style": "operations",
+    "preview": [
+      "Create",
+      "Import",
+      "Verify",
+      "Package"
+    ],
+    "bytes": 161,
+    "sha256": "90a0c67f6a0f708e5a7b1a47d74b32daf9505524a8e7794da41c779a90c52a5d",
+    "mime": "text/plain"
+  },
+  {
+    "id": 8,
+    "group": "jev",
+    "path": "jev/review-template.json",
+    "name": "review-template.json",
+    "type": "data",
+    "label": "Review criteria",
+    "style": "call",
+    "preview": [
+      "Respect.",
+      "Resolution.",
+      "Closing."
+    ],
+    "bytes": 105,
+    "sha256": "d7ebd5843f5e507aed61d655b2523cff696155425b0801bb3fa13c1c556ff349",
+    "mime": "application/json"
+  },
+  {
+    "id": 9,
+    "group": "content",
+    "path": "content/source.md",
+    "name": "source.md",
+    "type": "document",
+    "label": "Architecture excerpt",
+    "style": "source",
+    "preview": [
+      "Source",
+      "↓",
+      "Story"
+    ],
+    "bytes": 495,
+    "sha256": "589da407b2aa4f51012a8a2298696ff984f306d197f83c97481a61944ee2d1d3",
+    "mime": "text/plain"
+  },
+  {
+    "id": 10,
+    "group": "content",
+    "path": "content/script.json",
+    "name": "script.json",
+    "type": "data",
+    "label": "English draft",
+    "style": "script",
+    "preview": [
+      "Before you",
+      "believe it."
+    ],
+    "bytes": 539,
+    "sha256": "88ab286e791c898afdaaedb2051de02b1e0c542909cae9269d1739e4feb5e737",
+    "mime": "application/json"
+  },
+  {
+    "id": 11,
+    "group": "film",
+    "path": "film/shot-plan.json",
+    "name": "shot-plan.json",
+    "type": "data",
+    "label": "Chapter shot plan",
+    "style": "props",
+    "preview": [
+      "Two",
+      "chapters."
+    ],
+    "bytes": 281,
+    "sha256": "2f51e616261f5467ff05427e9df0875e95e4eaaf91db27c7035c72ee84f64e02",
+    "mime": "application/json"
+  },
+  {
+    "id": 12,
+    "group": "content",
+    "path": "content/claims.json",
+    "name": "claims.json",
+    "type": "data",
+    "label": "Claims and evidence",
+    "style": "hash",
+    "preview": [
+      "Check",
+      "the claim."
+    ],
+    "bytes": 500,
+    "sha256": "36465f8313f6418d31b82baf66463ea11e0c8cac02666a935ea1507e03e122ac",
+    "mime": "application/json"
+  },
+  {
+    "id": 13,
+    "group": "voice",
+    "path": "voice/session-boundaries.json",
+    "name": "session-boundaries.json",
+    "type": "data",
+    "label": "Session boundaries",
+    "style": "operations",
+    "preview": [
+      "No mic.",
+      "No model.",
+      "Text replay."
+    ],
+    "bytes": 130,
+    "sha256": "8254eef70f91ca4ec4ab9e19ddc5f41075f6009442f1e8632f7c8448691e0a57",
+    "mime": "application/json"
+  },
+  {
+    "id": 14,
+    "group": "toolkit",
+    "path": "toolkit/collection.md",
+    "name": "collection.md",
+    "type": "document",
+    "label": "Collection notes",
+    "style": "html",
+    "preview": [
+      "Originals",
+      "stay intact."
+    ],
+    "bytes": 304,
+    "sha256": "6db7fcae91c56838e9d7a2d000435edad90fed4554064af4d882db9b4e31503a",
+    "mime": "text/plain"
+  },
+  {
+    "id": 15,
+    "group": "film",
+    "path": "film/script-contract.json",
+    "name": "script-contract.json",
+    "type": "data",
+    "label": "Script contract example",
+    "style": "chapter",
+    "preview": [
+      "Script",
+      "then render."
+    ],
+    "bytes": 198,
+    "sha256": "9346eaa8b319be39801bded203c5fb875601783b75b9ed9756509c96aea7439f",
+    "mime": "application/json"
+  }
+]

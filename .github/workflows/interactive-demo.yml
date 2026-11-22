@@ -1,0 +1,27 @@
+name: English interactive demo
+on:
+  pull_request:
+    paths: ['demo/**', '.github/workflows/interactive-demo.yml']
+  push:
+    branches: [main]
+    paths: ['demo/**', '.github/workflows/interactive-demo.yml']
+permissions:
+  contents: read
+jobs:
+  demo:
+    name: demo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: demo/package-lock.json
+      - name: Install isolated demo dependencies
+        run: npm ci --prefix demo --ignore-scripts
+      - name: Check the isolated demo
+        run: npm run check --prefix demo
+      - name: Check authored code formatting
+        run: npm run format:check --prefix demo
