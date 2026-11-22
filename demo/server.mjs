@@ -126,6 +126,14 @@ function allocationStats(database) {
   }
   return result;
 }
+function workspaceDigests(database) {
+  return Object.fromEntries(
+    Object.entries(database.workspaces).map(([key, value]) => [
+      key,
+      createHash("sha256").update(JSON.stringify(value)).digest("hex"),
+    ]),
+  );
+}
 function accessAllocationStats(database) {
   return Object.fromEntries(
     ["users", "credentials"].map((kind) => [
@@ -222,6 +230,14 @@ function validateWorkspaceStorage(candidate, legacy = null) {
     )
       throw Error(
         "Unrecognized workspace owner or slot. Preserve the store for offline recovery.",
+      );
+    if (
+      legacy?.workspaceDigests &&
+      legacy.workspaceDigests[key] !==
+        createHash("sha256").update(JSON.stringify(value)).digest("hex")
+    )
+      throw Error(
+        "Your saved workspace is available to load or export. Ask the administrator to migrate it before saving changes.",
       );
     const bytes = recordBytes(key, value),
       nodes = jsonNodeCount(value),
@@ -330,7 +346,23 @@ function checkedLegacyProfile(database, profile) {
         );
     }
   }
-  profile = { ...profile, aggregate, accessAllocations };
+  const digests = profile.workspaceDigests || workspaceDigests(database);
+  if (
+    Object.keys(digests).length !== Object.keys(database.workspaces).length ||
+    Object.keys(database.workspaces).some(
+      (key) =>
+        !Object.hasOwn(digests, key) || !/^[a-f0-9]{64}$/.test(digests[key]),
+    )
+  )
+    throw Error(
+      "Unrecognized workspace recovery fingerprints. Preserve the store for offline recovery.",
+    );
+  profile = {
+    ...profile,
+    aggregate,
+    accessAllocations,
+    workspaceDigests: digests,
+  };
   validateWorkspaceStorage(database, profile);
   return profile;
 }
@@ -367,6 +399,7 @@ export function loadWorkspaceStore(storePath) {
       credentials: Object.keys(database.credentials),
       allocations: allocationStats(database),
       accessAllocations: accessAllocationStats(database),
+      workspaceDigests: workspaceDigests(database),
     };
     legacy.aggregate = Object.values(legacy.allocations).reduce(
       (sum, entry) => ({
@@ -380,6 +413,14 @@ export function loadWorkspaceStore(storePath) {
 }
 export function persistWorkspaceCandidate(storePath, candidate, legacy = null) {
   if (legacy) candidate = { ...candidate, legacyAdmission: legacy };
+  if (
+    legacy?.workspaceDigests &&
+    Object.keys(candidate.workspaces).length !==
+      Object.keys(legacy.workspaceDigests).length
+  )
+    throw Error(
+      "Your saved workspace is available to load or export. Ask the administrator to migrate it before saving changes.",
+    );
   validateWorkspaceStorage(candidate, legacy);
   const serialized = JSON.stringify(candidate);
   if (Buffer.byteLength(serialized) > workspaceStorageLimits.storeBytes)
@@ -399,6 +440,10 @@ export function saveWorkspaceCopy(
   storePath,
   legacy = null,
 ) {
+  if (legacy)
+    throw Error(
+      "Your saved workspace is available to load or export. Ask the administrator to migrate it before saving changes.",
+    );
   validateJsonValue(state);
   if (state === null || typeof state !== "object")
     throw Error("That workspace could not be saved.");
@@ -633,6 +678,7 @@ export function createDemoServer({
           signedIn: Boolean(signedIn(req)),
           passkeys: true,
           invitationRequired: hosted,
+          recoveryOnly: Boolean(legacy),
           registrationOpen:
             !legacy &&
             (!hosted ||
@@ -846,7 +892,7 @@ export function createDemoServer({
       } catch (e) {
         json(res, 400, {
           error:
-            /expired|already used|not registered|Sign in again|not match|already registered|too large|workspace type|Saved workspace storage is full|Workspace access is at capacity|access capacity|Invitation required|Existing workspace access is preserved/.test(
+            /expired|already used|not registered|Sign in again|not match|already registered|too large|workspace type|Saved workspace storage is full|Workspace access is at capacity|access capacity|Invitation required|Existing workspace access is preserved|Your saved workspace is available/.test(
               e.message,
             )
               ? e.message

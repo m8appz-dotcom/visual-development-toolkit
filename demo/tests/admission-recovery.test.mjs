@@ -218,37 +218,67 @@ test("original-format aggregate and access allocations survive stricter global l
           file,
           reopened.legacy,
         ),
-      /storage is full/,
+      /migrate it/,
     );
     assert.equal(readFileSync(file, "utf8"), current);
   }
 });
-test("legacy shrink preserves recovery mode across restart and rejects new identities", (t) => {
+test("legacy recovery stays read-only across restart and rejects shape changes", (t) => {
   const file = fixture(t),
     database = empty();
   database.users.first = { id: "first" };
-  database.workspaces["first:content"] = { draft: "x".repeat(153000) };
-  database.workspaces["first:voice"] = { draft: "x".repeat(153000) };
+  database.credentials.key = {
+    id: "key",
+    user: "first",
+    publicKey: "fixture",
+    counter: 9,
+  };
+  database.workspaces["first:content"] = {
+    items: Array.from({ length: 25000 }, () => 0),
+  };
   writeFileSync(file, JSON.stringify(database));
   let loaded = loadWorkspaceStore(file);
-  let saved = saveWorkspaceCopy(
-    loaded.database,
-    "first",
-    "content",
-    { draft: "small" },
-    file,
-    loaded.legacy,
+  const prior = readFileSync(file, "utf8");
+  assert.throws(
+    () =>
+      saveWorkspaceCopy(
+        loaded.database,
+        "first",
+        "content",
+        { draft: "small" },
+        file,
+        loaded.legacy,
+      ),
+    /migrate it/,
   );
-  saved = saveWorkspaceCopy(
-    saved,
-    "first",
-    "voice",
-    { draft: "small" },
+  assert.equal(readFileSync(file, "utf8"), prior);
+  assert.throws(
+    () =>
+      persistWorkspaceCandidate(
+        file,
+        {
+          ...loaded.database,
+          workspaces: {
+            "first:content": {
+              items: Array.from({ length: 13000 }, () => ({})),
+            },
+          },
+        },
+        loaded.legacy,
+      ),
+    /migrate it/,
+  );
+  assert.equal(readFileSync(file, "utf8"), prior);
+  const saved = persistWorkspaceCandidate(
     file,
+    {
+      ...loaded.database,
+      credentials: { key: { ...loaded.database.credentials.key, counter: 10 } },
+    },
     loaded.legacy,
   );
   loaded = loadWorkspaceStore(file);
-  assert.ok(loaded.legacy);
+  assert.ok(loaded.legacy.workspaceDigests);
   assert.equal(
     registrationCapacityReached(loaded.database, undefined, loaded.legacy),
     true,
@@ -262,7 +292,8 @@ test("legacy shrink preserves recovery mode across restart and rejects new ident
       ),
     /Existing workspace access is preserved/,
   );
-  assert.equal(loaded.database.workspaces["first:voice"].draft, "small");
+  assert.equal(loaded.database.workspaces["first:content"].items.length, 25000);
+  assert.equal(loaded.database.credentials.key.counter, 10);
 });
 test("credential counters retain reserved growth at the record and legacy metadata limits", (t) => {
   const file = fixture(t);
