@@ -134,7 +134,8 @@ export function engineGateway({
         return true;
       }
       const who = owner(req, res, true),
-        rate = limits.get(who) || { count: 0, until: now + 60000 };
+        principal = authenticated(req)?.user || who,
+        rate = limits.get(principal) || { count: 0, until: now + 60000 };
       if (rate.count >= 12 || active >= 2 || jobs.size >= 60) {
         reply(res, 429, {
           error: "The engine is busy. Wait for the current task, then retry.",
@@ -143,7 +144,7 @@ export function engineGateway({
         return true;
       }
       rate.count++;
-      limits.set(who, rate);
+      limits.set(principal, rate);
       const engineRoot = path.join(stateRoot, "engine");
       if (
         Number.isFinite(storedJobsLimit) &&

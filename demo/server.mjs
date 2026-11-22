@@ -1,5 +1,6 @@
 import { engineGateway } from "./engine-gateway.mjs";
 import http from "node:http";
+import { isIP } from "node:net";
 import {
   readFileSync,
   writeFileSync,
@@ -199,8 +200,22 @@ export function createDemoServer({
       for (const map of [sessions, challenges])
         for (const [id, value] of map) if (value.until < now) map.delete(id);
       for (const [id, value] of rates) if (value.until < now) rates.delete(id);
-      const ip = req.socket.remoteAddress,
-        rate = rates.get(ip) || { count: 0, until: now + 60000 };
+      const remote = req.socket.remoteAddress;
+      const forwarded = req.headers["cf-connecting-ip"];
+      const ip =
+        hosted &&
+        ["127.0.0.1", "::1", "::ffff:127.0.0.1"].includes(remote) &&
+        typeof forwarded === "string" &&
+        isIP(forwarded)
+          ? forwarded
+          : remote;
+      if (!rates.has(ip) && rates.size >= 4096) {
+        json(res, 429, {
+          error: "Workspace access is busy. Try again shortly.",
+        });
+        return;
+      }
+      const rate = rates.get(ip) || { count: 0, until: now + 60000 };
       rate.count++;
       rates.set(ip, rate);
       if (rate.count > 120) {
@@ -290,6 +305,16 @@ export function createDemoServer({
           const c = result.registrationInfo.credential;
           if (db.credentials[c.id])
             throw new Error("That passkey is already registered.");
+          // Verification yields: capacity may have changed since options were issued.
+          if (
+            hosted &&
+            ((!db.users[expected.user] &&
+              Object.keys(db.users).length >= 250) ||
+              Object.keys(db.credentials).length >= 1000)
+          )
+            throw Error(
+              "This workspace has reached its access capacity. Existing passkeys still work.",
+            );
           db.users[expected.user] = expected.record;
           db.credentials[c.id] = {
             ...c,
