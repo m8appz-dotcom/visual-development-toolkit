@@ -45,15 +45,29 @@ const safeFile = (root, name) => {
   return full;
 };
 export const workspaceStorageLimits = Object.freeze({
+  users: 16,
+  credentialsPerUser: 4,
+  credentials: 64,
   entryBytes: 192 * 1024,
-  userBytes: 384 * 1024,
+  userBytes: 256 * 1024,
   totalBytes: 4 * 1024 * 1024,
-  userNodes: 30000,
+  userNodes: 6000,
   totalNodes: 100000,
   metadataBytes: 1024 * 1024,
   recordBytes: 8 * 1024,
+  userRecordBytes: 512,
   storeBytes: 8 * 1024 * 1024,
 });
+export function registrationCapacityReached(database, user) {
+  return (
+    (!database.users[user] &&
+      Object.keys(database.users).length >= workspaceStorageLimits.users) ||
+    Object.keys(database.credentials).length >=
+      workspaceStorageLimits.credentials ||
+    Object.values(database.credentials).filter((record) => record.user === user)
+      .length >= workspaceStorageLimits.credentialsPerUser
+  );
+}
 function jsonNodeCount(value) {
   let count = 0;
   const pending = [value];
@@ -89,6 +103,13 @@ export function storedCredential(credential, user) {
   };
 }
 function validateWorkspaceStorage(candidate) {
+  if (
+    Object.keys(candidate.users).length > workspaceStorageLimits.users ||
+    Object.keys(candidate.credentials).length >
+      workspaceStorageLimits.credentials
+  )
+    throw Error("Workspace access is at capacity. Your saved work is safe.");
+  const credentialCounts = new Map();
   let metadataBytes = 0;
   for (const records of [candidate.users, candidate.credentials]) {
     for (const [key, value] of Object.entries(records)) {
@@ -98,8 +119,23 @@ function validateWorkspaceStorage(candidate) {
         Buffer.byteLength(JSON.stringify(key), "utf8") +
         2;
       metadataBytes += bytes;
+      if (records === candidate.credentials) {
+        if (!candidate.users[value.user])
+          throw Error(
+            "Unrecognized workspace owner. Preserve the store for offline recovery.",
+          );
+        const count = (credentialCounts.get(value.user) || 0) + 1;
+        if (count > workspaceStorageLimits.credentialsPerUser)
+          throw Error(
+            "Workspace access is at capacity. Your saved work is safe.",
+          );
+        credentialCounts.set(value.user, count);
+      }
       if (
-        bytes > workspaceStorageLimits.recordBytes ||
+        bytes >
+          (records === candidate.users
+            ? workspaceStorageLimits.userRecordBytes
+            : workspaceStorageLimits.recordBytes) ||
         metadataBytes > workspaceStorageLimits.metadataBytes
       )
         throw Error(
@@ -118,6 +154,14 @@ function validateWorkspaceStorage(candidate) {
       Buffer.byteLength(JSON.stringify(key), "utf8") +
       2;
     const user = key.slice(0, key.lastIndexOf(":"));
+    const slot = key.slice(key.lastIndexOf(":") + 1);
+    if (
+      !candidate.users[user] ||
+      !["content", "jev", "toolkit", "voice", "film"].includes(slot)
+    )
+      throw Error(
+        "Unrecognized workspace owner or slot. Preserve the store for offline recovery.",
+      );
     const userBytes = (byUser.get(user) || 0) + bytes;
     const nodes = jsonNodeCount(value);
     const userNodes = (nodesByUser.get(user) || 0) + nodes;
@@ -135,6 +179,10 @@ function validateWorkspaceStorage(candidate) {
       );
     byUser.set(user, userBytes);
     nodesByUser.set(user, userNodes);
+    if (byUser.size > workspaceStorageLimits.users)
+      throw Error(
+        "Saved workspace storage is full. Export a local copy or reduce your saved work and try again.",
+      );
   }
 }
 function persistWorkspaceCandidate(storePath, candidate) {
@@ -367,11 +415,7 @@ export function createDemoServer({
         const input = await body(req),
           session = signedIn(req);
         if (pathname === "/auth/register/options") {
-          if (
-            hosted &&
-            ((!session && Object.keys(db.users).length >= 250) ||
-              Object.keys(db.credentials).length >= 1000)
-          )
+          if (hosted && registrationCapacityReached(db, session?.user))
             throw Error(
               "This workspace has reached its access capacity. Existing passkeys still work.",
             );
@@ -431,12 +475,7 @@ export function createDemoServer({
           if (db.credentials[c.id])
             throw new Error("That passkey is already registered.");
           // Verification yields: capacity may have changed since options were issued.
-          if (
-            hosted &&
-            ((!db.users[expected.user] &&
-              Object.keys(db.users).length >= 250) ||
-              Object.keys(db.credentials).length >= 1000)
-          )
+          if (hosted && registrationCapacityReached(db, expected.user))
             throw Error(
               "This workspace has reached its access capacity. Existing passkeys still work.",
             );
@@ -552,7 +591,7 @@ export function createDemoServer({
       } catch (e) {
         json(res, 400, {
           error:
-            /expired|already used|not registered|Sign in again|not match|already registered|too large|workspace type|Saved workspace storage is full|Workspace access is at capacity/.test(
+            /expired|already used|not registered|Sign in again|not match|already registered|too large|workspace type|Saved workspace storage is full|Workspace access is at capacity|access capacity/.test(
               e.message,
             )
               ? e.message

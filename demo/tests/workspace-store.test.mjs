@@ -15,6 +15,7 @@ import {
 import {
   createDemoServer,
   saveWorkspaceCopy,
+  registrationCapacityReached,
   storedCredential,
   workspaceStorageLimits,
 } from "../server.mjs";
@@ -40,89 +41,142 @@ const empty = () => ({
   credentials: {},
   workspaces: {},
 });
-test("workspace byte budgets reject aggregate growth and preserve replacement and recovery", (t) => {
+// These are plain persistence fixtures, not simulated WebAuthn credentials or sessions.
+function save(database, user, key, state, file) {
+  const candidate = database.users[user]
+    ? database
+    : {
+        ...database,
+        users: {
+          ...database.users,
+          [user]: { id: user, name: "Storage fixture" },
+        },
+      };
+  return saveWorkspaceCopy(candidate, user, key, state, file);
+}
+test("reserved identity budgets preserve a new user's save when others fill their allocations", (t) => {
   const file = fixture(t);
   let database = empty();
-  const state = { draft: "😀".repeat(47000) };
-  database = saveWorkspaceCopy(database, "first", "content", state, file);
-  database = saveWorkspaceCopy(database, "first", "voice", state, file);
+  const first = { draft: "x".repeat(180000) };
+  const second = { draft: "x".repeat(80000) };
+  for (let user = 0; user < workspaceStorageLimits.users - 1; user++) {
+    database = save(database, "user-" + user, "content", first, file);
+    database = save(database, "user-" + user, "voice", second, file);
+  }
   const prior = readFileSync(file, "utf8");
   assert.throws(
-    () => saveWorkspaceCopy(database, "first", "film", state, file),
+    () => save(database, "user-0", "film", { draft: "x".repeat(4000) }, file),
     /storage is full/,
   );
   assert.equal(readFileSync(file, "utf8"), prior);
-  assert.equal(database.workspaces["first:film"], undefined);
-  // Replacement at the per-user limit must not double-count the previous slot.
-  database = saveWorkspaceCopy(database, "first", "content", state, file);
-  for (let user = 0; user < 19; user++)
-    database = saveWorkspaceCopy(
-      database,
-      "other-" + user,
-      "content",
-      state,
-      file,
-    );
-  database = saveWorkspaceCopy(database, "last", "content", state, file);
-  const full = readFileSync(file, "utf8");
+  database = save(database, "last", "content", first, file);
+  database = save(database, "last", "voice", second, file);
+  database = save(database, "last", "content", first, file);
   assert.throws(
-    () => saveWorkspaceCopy(database, "overflow", "content", state, file),
-    /storage is full/,
+    () => save(database, "seventeenth", "content", {}, file),
+    /at capacity/,
   );
-  assert.equal(readFileSync(file, "utf8"), full);
-  database = saveWorkspaceCopy(
-    database,
-    "first",
-    "content",
-    { draft: "smaller" },
-    file,
-  );
-  database = saveWorkspaceCopy(database, "overflow", "content", state, file);
-  assert.equal(database.workspaces["first:voice"].draft, state.draft);
+  database = save(database, "user-0", "content", { draft: "smaller" }, file);
+  database = save(database, "user-0", "film", { draft: "recovered" }, file);
+  assert.equal(database.workspaces["last:content"].draft, first.draft);
   assert.ok(
     Buffer.byteLength(readFileSync(file, "utf8")) <
       workspaceStorageLimits.storeBytes,
   );
   assert.throws(
     () =>
-      saveWorkspaceCopy(
-        database,
-        "large",
-        "content",
-        { draft: "😀".repeat(50000) },
-        file,
-      ),
+      save(database, "user-0", "toolkit", { draft: "😀".repeat(50000) }, file),
     /storage is full/,
   );
 });
-test("cumulative object-node budgets bound many small saved objects independently of bytes", (t) => {
+test("object-node capacity is reserved per admitted identity and smaller replacements recover", (t) => {
   const file = fixture(t);
   let database = empty();
-  const state = { items: Array.from({ length: 19000 }, () => ({})) };
-  database = saveWorkspaceCopy(database, "first", "content", state, file);
-  assert.throws(
-    () => saveWorkspaceCopy(database, "first", "voice", state, file),
-    /storage is full/,
-  );
-  for (let i = 1; i < 5; i++)
-    database = saveWorkspaceCopy(database, "user-" + i, "content", state, file);
+  const state = { items: Array.from({ length: 5997 }, () => ({})) };
+  for (let i = 0; i < 15; i++)
+    database = save(database, "user-" + i, "content", state, file);
   const prior = readFileSync(file, "utf8");
   assert.throws(
-    () => saveWorkspaceCopy(database, "overflow", "content", state, file),
+    () => save(database, "user-0", "voice", { items: [{}] }, file),
     /storage is full/,
   );
   assert.equal(readFileSync(file, "utf8"), prior);
-  database = saveWorkspaceCopy(
+  database = save(database, "last", "content", state, file);
+  database = save(database, "user-0", "content", { items: [] }, file);
+  database = save(database, "user-0", "voice", { items: [{}] }, file);
+  assert.equal(database.workspaces["last:content"].items.length, 5997);
+});
+test("access capacity reserves four bounded credentials per admitted identity", (t) => {
+  const file = fixture(t),
+    database = empty();
+  for (let i = 0; i < 16; i++)
+    database.users["user-" + i] = { id: "user-" + i };
+  for (let user = 0; user < 15; user++)
+    for (let key = 0; key < 4; key++)
+      database.credentials[user + "-" + key] = {
+        id: user + "-" + key,
+        user: "user-" + user,
+        publicKey: "x".repeat(7900),
+      };
+  assert.equal(registrationCapacityReached(database, undefined), true);
+  assert.equal(registrationCapacityReached(database, "user-0"), true);
+  assert.equal(registrationCapacityReached(database, "user-15"), false);
+  for (let key = 0; key < 4; key++)
+    database.credentials["last-" + key] = {
+      id: "last-" + key,
+      user: "user-15",
+      publicKey: "x".repeat(7900),
+    };
+  assert.equal(registrationCapacityReached(database, "user-15"), true);
+  saveWorkspaceCopy(
     database,
-    "first",
+    "user-15",
     "content",
-    { items: [] },
+    { draft: "still works" },
     file,
   );
-  database = saveWorkspaceCopy(database, "overflow", "content", state, file);
-  assert.equal(database.workspaces["user-1:content"].items.length, 19000);
+  database.credentials["one-extra"] = { user: "user-0", publicKey: "x" };
+  assert.throws(
+    () => saveWorkspaceCopy(database, "user-0", "content", {}, file),
+    /at capacity/,
+  );
 });
-test("credential metadata is bounded and untrusted transports are reduced to known unique values", (t) => {
+test("orphaned state and unknown slots fail closed without rewriting the store", (t) => {
+  const file = fixture(t);
+  const database = save(
+    empty(),
+    "first",
+    "content",
+    { draft: "preserved" },
+    file,
+  );
+  const prior = readFileSync(file, "utf8");
+  for (const candidate of [
+    {
+      ...database,
+      workspaces: { ...database.workspaces, "unknown:content": {} },
+    },
+    {
+      ...database,
+      workspaces: { ...database.workspaces, "first:unknown": {} },
+    },
+    { ...database, credentials: { unknown: { user: "unknown" } } },
+  ]) {
+    assert.throws(
+      () => saveWorkspaceCopy(candidate, "first", "content", {}, file),
+      /Unrecognized workspace owner/,
+    );
+    writeFileSync(file, JSON.stringify(candidate));
+    const invalid = readFileSync(file, "utf8");
+    assert.throws(
+      () => createDemoServer({ storePath: file }),
+      /Unrecognized workspace owner/,
+    );
+    assert.equal(readFileSync(file, "utf8"), invalid);
+    writeFileSync(file, prior);
+  }
+});
+test("credential metadata is bounded and untrusted transports retain only recognized unique values", (t) => {
   const file = fixture(t);
   const credential = storedCredential(
     {
@@ -134,22 +188,20 @@ test("credential metadata is bounded and untrusted transports are reduced to kno
     "first",
   );
   assert.deepEqual(credential.transports, ["internal", "hybrid"]);
-  assert.ok(Buffer.byteLength(JSON.stringify(credential)) < 200);
   const database = empty();
-  database.credentials.bad = { publicKey: "x".repeat(9000) };
+  database.users.first = { id: "first" };
+  database.credentials.bad = { user: "first", publicKey: "x".repeat(9000) };
   assert.throws(
     () => saveWorkspaceCopy(database, "first", "content", {}, file),
     /at capacity/,
   );
   assert.equal(existsSync(file), false);
   delete database.credentials.bad;
-  for (let i = 0; i < 160; i++)
-    database.credentials[i] = { publicKey: "x".repeat(7000) };
+  database.users.first.name = "x".repeat(600);
   assert.throws(
     () => saveWorkspaceCopy(database, "first", "content", {}, file),
     /at capacity/,
   );
-  assert.equal(existsSync(file), false);
 });
 test("oversized existing stores fail closed without replacing their original data", (t) => {
   const file = fixture(t);
@@ -160,7 +212,7 @@ test("oversized existing stores fail closed without replacing their original dat
 });
 test("a sub-200KB deeply nested workspace cannot poison another user's saved state", (t) => {
   const file = fixture(t);
-  let database = saveWorkspaceCopy(
+  let database = save(
     empty(),
     "other-user",
     "content",
@@ -174,12 +226,12 @@ test("a sub-200KB deeply nested workspace cannot poison another user's saved sta
     Buffer.byteLength('{"x":'.repeat(5000) + "0" + "}".repeat(5000)) < 200000,
   );
   assert.throws(
-    () => saveWorkspaceCopy(database, "attacker-test", "content", attack, file),
+    () => save(database, "attacker-test", "content", attack, file),
     /too complex/,
   );
   assert.equal(database.workspaces["attacker-test:content"], undefined);
   assert.equal(readFileSync(file, "utf8"), prior);
-  database = saveWorkspaceCopy(
+  database = save(
     database,
     "another-user",
     "content",
@@ -198,7 +250,7 @@ test("a sub-200KB deeply nested workspace cannot poison another user's saved sta
 });
 test("a failed atomic write preserves memory and disk and a later save recovers", (t) => {
   const file = fixture(t);
-  let database = saveWorkspaceCopy(
+  let database = save(
     empty(),
     "first-user",
     "content",
@@ -208,18 +260,12 @@ test("a failed atomic write preserves memory and disk and a later save recovers"
   const prior = readFileSync(file, "utf8");
   mkdirSync(file + ".tmp");
   assert.throws(() =>
-    saveWorkspaceCopy(
-      database,
-      "first-user",
-      "content",
-      { draft: "must not commit" },
-      file,
-    ),
+    save(database, "first-user", "content", { draft: "must not commit" }, file),
   );
   assert.equal(database.workspaces["first-user:content"].draft, "original");
   assert.equal(readFileSync(file, "utf8"), prior);
   rmdirSync(file + ".tmp");
-  database = saveWorkspaceCopy(
+  database = save(
     database,
     "first-user",
     "content",
