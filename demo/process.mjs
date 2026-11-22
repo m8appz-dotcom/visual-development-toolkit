@@ -1,10 +1,34 @@
 import { spawn } from "node:child_process";
+export function validateJsonValue(value) {
+  const pending = [[value, 0]];
+  let nodes = 0;
+  while (pending.length) {
+    const [item, depth] = pending.pop();
+    if (++nodes > 20000 || depth > 32)
+      throw inputError(
+        "That request is too complex. Use a smaller compatible workspace.",
+      );
+    if (item && typeof item === "object")
+      for (const child of Object.values(item)) pending.push([child, depth + 1]);
+    else if (
+      (typeof item === "number" && !Number.isFinite(item)) ||
+      ["bigint", "function", "symbol"].includes(typeof item)
+    )
+      throw inputError("That request contains an unsupported value.");
+  }
+  return value;
+}
 export function execute(
   command,
   args,
   input,
   { cwd, env = {}, timeout = 90000 } = {},
 ) {
+  try {
+    validateJsonValue(input);
+  } catch (error) {
+    return Promise.reject(error);
+  }
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,

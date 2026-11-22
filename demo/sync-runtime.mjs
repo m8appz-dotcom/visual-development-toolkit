@@ -29,7 +29,7 @@ export function verifyRuntime(base = root, source = null) {
     readFileSync(path.join(base, "runtime-lock.json"), "utf8"),
   );
   if (
-    !["1.0.0", "1.1.0"].includes(lock.version) ||
+    !["1.0.0", "1.1.0", "1.1.1", "1.1.2", "1.1.3"].includes(lock.version) ||
     lock.upstream.repository !== "m8appz-dotcom/visual-development-toolkit" ||
     !/^[a-f0-9]{40}$/.test(lock.upstream.commit)
   )
