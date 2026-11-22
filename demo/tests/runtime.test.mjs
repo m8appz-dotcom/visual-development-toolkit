@@ -58,3 +58,37 @@ test("default workspace server denies microphone access", async () => {
     await new Promise((resolve) => server.close(resolve));
   }
 });
+
+test("a complete trusted source restores a deleted runtime member", () => {
+  const temp = mkdtempSync(path.join(os.tmpdir(), "demo-runtime-"));
+  try {
+    const target = path.join(temp, "target"),
+      source = path.join(temp, "source");
+    const lock = JSON.parse(
+      readFileSync(path.join(demo, "runtime-lock.json"), "utf8"),
+    );
+    for (const root of [target, source]) {
+      mkdirSync(path.join(root, "public"), { recursive: true });
+      copyFileSync(
+        path.join(demo, "runtime-lock.json"),
+        path.join(root, "runtime-lock.json"),
+      );
+      for (const name of Object.keys(lock.files))
+        copyFileSync(path.join(demo, name), path.join(root, name));
+    }
+    rmSync(path.join(target, "public/core.js"));
+    assert.equal(verifyRuntime(target, source), 5);
+    assert.equal(
+      readFileSync(path.join(target, "public/core.js"), "utf8"),
+      readFileSync(path.join(source, "public/core.js"), "utf8"),
+    );
+  } finally {
+    if (
+      !path
+        .resolve(temp)
+        .startsWith(path.resolve(os.tmpdir()) + path.sep + "demo-runtime-")
+    )
+      throw Error("Unexpected test cleanup target");
+    rmSync(temp, { recursive: true, force: true });
+  }
+});
