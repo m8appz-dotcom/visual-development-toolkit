@@ -1,8 +1,21 @@
 import { randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
-import { mkdirSync, createReadStream, statSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  createReadStream,
+  statSync,
+  writeFileSync,
+  readdirSync,
+  existsSync,
+} from "node:fs";
 import path from "node:path";
 
-export function engineGateway({ engine, origin, stateRoot, authenticated }) {
+export function engineGateway({
+  engine,
+  origin,
+  stateRoot,
+  authenticated,
+  storedJobsLimit = Infinity,
+}) {
   const jobs = new Map(),
     limits = new Map();
   let active = 0;
@@ -131,6 +144,19 @@ export function engineGateway({ engine, origin, stateRoot, authenticated }) {
       }
       rate.count++;
       limits.set(who, rate);
+      const engineRoot = path.join(stateRoot, "engine");
+      if (
+        Number.isFinite(storedJobsLimit) &&
+        existsSync(engineRoot) &&
+        readdirSync(engineRoot).length >= storedJobsLimit
+      ) {
+        reply(res, 429, {
+          error:
+            "This workspace has reached its saved task capacity. Export your existing work; contact the administrator for more space.",
+          code: "storage_capacity",
+        });
+        return true;
+      }
       const id = randomUUID(),
         directory = path.join(stateRoot, "engine", id);
       mkdirSync(directory, { recursive: true });

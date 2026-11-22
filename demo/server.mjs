@@ -46,14 +46,38 @@ export function createDemoServer({
   root = path.join(HERE, "site"),
   storePath = path.join(HERE, ".demo-state", "workspaces.json"),
   origin = "http://localhost:8875",
+  hosted = false,
   enableCapture = false,
   engine = null,
 } = {}) {
   const url = new URL(origin);
-  if (url.hostname !== "localhost" || url.protocol !== "http:")
+  const secureHost =
+    hosted === true &&
+    url.protocol === "https:" &&
+    origin === url.origin &&
+    !url.port &&
+    !url.username &&
+    !url.password &&
+    /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/.test(
+      url.hostname,
+    ) &&
+    !/^[0-9.]+$/.test(url.hostname) &&
+    !url.hostname.endsWith(".localhost");
+  if (
+    hosted
+      ? !secureHost
+      : url.hostname !== "localhost" || url.protocol !== "http:"
+  )
     throw new Error(
       "This local demo server only supports its documented localhost origin. Configure production separately.",
     );
+  if (
+    hosted &&
+    (enableCapture ||
+      path.resolve(storePath).startsWith(path.resolve(root) + path.sep))
+  )
+    throw Error("Hosted access requires private storage and capture disabled.");
+  const rpID = url.hostname;
   const sessions = new Map(),
     challenges = new Map(),
     rates = new Map(),
@@ -89,11 +113,15 @@ export function createDemoServer({
     return s && s.until > Date.now() ? s : null;
   };
   const sessionCookie = (user) => {
+    if (hosted && sessions.size >= 1024)
+      throw Error("Workspace access is busy. Try again later.");
     const token = encode(randomBytes(32));
     sessions.set(token, { user, until: Date.now() + 3_600_000 });
     return cookie("__Host-workspace", token);
   };
   const pending = (res, data) => {
+    if (hosted && challenges.size >= 512)
+      throw Error("Workspace access is busy. Try again later.");
     const token = encode(randomBytes(32));
     challenges.set(token, { ...data, until: Date.now() + 120000 });
     res.setHeader("Set-Cookie", cookie("__Host-challenge", token, 120));
@@ -122,12 +150,17 @@ export function createDemoServer({
     return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
   };
   const handleEngine = engineGateway({
-    engine,
+    engine:
+      hosted && engine
+        ? { ...engine, protectedActions: engine.actions }
+        : engine,
     origin,
     stateRoot: path.dirname(storePath),
     authenticated: signedIn,
+    storedJobsLimit: hosted ? 300 : Infinity,
   });
   const server = http.createServer(async (req, res) => {
+    if (hosted) res.setHeader("Strict-Transport-Security", "max-age=31536000");
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
     res.setHeader(
@@ -142,7 +175,7 @@ export function createDemoServer({
     );
     if (req.headers.host !== url.host) {
       json(res, 400, {
-        error: "Open this demo using its configured localhost address.",
+        error: "Open this workspace using its configured address.",
       });
       return;
     }
@@ -194,6 +227,14 @@ export function createDemoServer({
         const input = await body(req),
           session = signedIn(req);
         if (pathname === "/auth/register/options") {
+          if (
+            hosted &&
+            ((!session && Object.keys(db.users).length >= 250) ||
+              Object.keys(db.credentials).length >= 1000)
+          )
+            throw Error(
+              "This workspace has reached its access capacity. Existing passkeys still work.",
+            );
           const user = session?.user || encode(randomBytes(24)),
             record = db.users[user] || {
               id: user,
@@ -205,7 +246,7 @@ export function createDemoServer({
           );
           const options = await generateRegistrationOptions({
             rpName: "Portfolio demo workspace",
-            rpID: "localhost",
+            rpID,
             userID: new Uint8Array(
               Buffer.from(record.webauthnUserID, "base64url"),
             ),
@@ -241,7 +282,7 @@ export function createDemoServer({
             response: input,
             expectedChallenge: expected.challenge,
             expectedOrigin: origin,
-            expectedRPID: "localhost",
+            expectedRPID: rpID,
             requireUserVerification: true,
           });
           if (!result.verified || !result.registrationInfo)
@@ -266,7 +307,7 @@ export function createDemoServer({
         }
         if (pathname === "/auth/login/options") {
           const options = await generateAuthenticationOptions({
-            rpID: "localhost",
+            rpID,
             userVerification: "required",
           });
           pending(res, { kind: "login", challenge: options.challenge });
@@ -289,7 +330,7 @@ export function createDemoServer({
             response: input,
             expectedChallenge: expected.challenge,
             expectedOrigin: origin,
-            expectedRPID: "localhost",
+            expectedRPID: rpID,
             credential: {
               ...record,
               publicKey: new Uint8Array(
@@ -448,6 +489,12 @@ export function createDemoServer({
     else res.end(readFileSync(file));
   });
   engine?.attach?.(server, { origin, authenticated: signedIn });
+  if (hosted) {
+    server.requestTimeout = 15000;
+    server.headersTimeout = 10000;
+    server.keepAliveTimeout = 5000;
+    server.maxRequestsPerSocket = 100;
+  }
   return server;
 }
 if (
