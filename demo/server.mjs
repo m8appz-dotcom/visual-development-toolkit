@@ -120,7 +120,7 @@ function validateWorkspaceStorage(candidate) {
         2;
       metadataBytes += bytes;
       if (records === candidate.credentials) {
-        if (!candidate.users[value.user])
+        if (!Object.hasOwn(candidate.users, value.user))
           throw Error(
             "Unrecognized workspace owner. Preserve the store for offline recovery.",
           );
@@ -156,7 +156,7 @@ function validateWorkspaceStorage(candidate) {
     const user = key.slice(0, key.lastIndexOf(":"));
     const slot = key.slice(key.lastIndexOf(":") + 1);
     if (
-      !candidate.users[user] ||
+      !Object.hasOwn(candidate.users, user) ||
       !["content", "jev", "toolkit", "voice", "film"].includes(slot)
     )
       throw Error(

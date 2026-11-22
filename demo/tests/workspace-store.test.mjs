@@ -161,6 +161,7 @@ test("orphaned state and unknown slots fail closed without rewriting the store",
       workspaces: { ...database.workspaces, "first:unknown": {} },
     },
     { ...database, credentials: { unknown: { user: "unknown" } } },
+    { ...database, credentials: { unknown: { user: "toString" } } },
   ]) {
     assert.throws(
       () => saveWorkspaceCopy(candidate, "first", "content", {}, file),
