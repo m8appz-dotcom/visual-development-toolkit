@@ -28,3 +28,9 @@ If another person reviews a change, record their real review. Requiring a human 
 ## Verification and rollback
 
 Use the checks documented in the README and CI. Record real commands and outcomes in the PR. Keep fixtures, live-provider evaluations, and customer outcomes distinct. Revert a focused merged change with a new commit/PR when needed; do not force-push history or delete recovery refs.
+
+## Keep the next change reviewable
+
+Separate dependency migrations, shared runtime upgrades, product screens and engine integrations into focused PRs when their dependencies permit. Give each PR a concrete trigger, resulting behavior, relevant tests and a revert path. A lockfile belongs with its dependency migration. Link dependent PRs explicitly; preserve existing history instead of rewriting it for presentation. Obtain and identify a human review when one actually occurs; automated review remains automated.
+
+Shared demo changes follow [the pinned runtime process](../demo/RUNTIME.md). Product CSS stays in its own repository.
