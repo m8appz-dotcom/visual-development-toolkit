@@ -1,0 +1,69 @@
+import { readFileSync, writeFileSync, realpathSync, lstatSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createHash } from "node:crypto";
+const root = path.dirname(fileURLToPath(import.meta.url));
+const allowed = new Set([
+  "server.mjs",
+  "engine-gateway.mjs",
+  "process.mjs",
+  "public/core.js",
+  "public/engine-client.js",
+]);
+function checkedFile(base, name) {
+  if (!allowed.has(name)) throw Error("Unexpected runtime member.");
+  const resolved = path.join(base, name);
+  const actual = realpathSync(resolved);
+  if (
+    lstatSync(resolved).isSymbolicLink() ||
+    !actual.startsWith(realpathSync(base) + path.sep)
+  )
+    throw Error("Runtime member escapes its source.");
+  return resolved;
+}
+const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
+export function verifyRuntime(base = root, source = null) {
+  const lock = JSON.parse(
+    readFileSync(path.join(base, "runtime-lock.json"), "utf8"),
+  );
+  if (
+    lock.version !== "1.0.0" ||
+    lock.upstream.repository !== "m8appz-dotcom/visual-development-toolkit" ||
+    !/^[a-f0-9]{40}$/.test(lock.upstream.commit)
+  )
+    throw Error("Unsupported runtime source.");
+  if (Object.keys(lock.files).length !== allowed.size)
+    throw Error("Incomplete runtime lock.");
+  const pending = [];
+  for (const [name, expected] of Object.entries(lock.files)) {
+    if (!/^[a-f0-9]{64}$/.test(expected))
+      throw Error("Invalid runtime checksum.");
+    const target = checkedFile(base, name);
+    const bytes = readFileSync(source ? checkedFile(source, name) : target);
+    if (digest(bytes) !== expected)
+      throw Error("Runtime checksum mismatch: " + name);
+    pending.push([target, bytes]);
+  }
+  // Verify every source and destination before writing any runtime member.
+  if (source)
+    for (const [target, bytes] of pending) writeFileSync(target, bytes);
+  return pending.length;
+}
+if (
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  const option = process.argv[2] || "--check";
+  if (option !== "--check" && option !== "--from")
+    throw Error("Use --check or --from <trusted-demo-directory>.");
+  if (option === "--from" && !process.argv[3])
+    throw Error("A local canonical demo directory is required.");
+  console.log(
+    "Verified " +
+      verifyRuntime(
+        root,
+        option === "--from" ? path.resolve(process.argv[3]) : null,
+      ) +
+      " pinned runtime files.",
+  );
+}
