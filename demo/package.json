@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check server.mjs && npm test && npm audit --audit-level=low",
+    "check": "node sync-runtime.mjs --check && node --check server.mjs && npm test && npm audit --audit-level=low",
     "format:check": "prettier --check *.mjs public/*.js tests/*.mjs package.json"
   },
   "dependencies": {

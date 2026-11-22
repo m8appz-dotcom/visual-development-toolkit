@@ -136,7 +136,9 @@ export function createDemoServer({
     );
     res.setHeader(
       "Permissions-Policy",
-      "camera=(), microphone=(), geolocation=()",
+      engine?.allowMicrophone === true
+        ? "camera=(), microphone=(self), geolocation=()"
+        : "camera=(), microphone=(), geolocation=()",
     );
     if (req.headers.host !== url.host) {
       json(res, 400, {
