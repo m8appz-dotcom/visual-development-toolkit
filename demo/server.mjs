@@ -44,9 +44,108 @@ const safeFile = (root, name) => {
   if (!full.startsWith(path.resolve(root) + path.sep)) return null;
   return full;
 };
+export const workspaceStorageLimits = Object.freeze({
+  entryBytes: 192 * 1024,
+  userBytes: 384 * 1024,
+  totalBytes: 4 * 1024 * 1024,
+  userNodes: 30000,
+  totalNodes: 100000,
+  metadataBytes: 1024 * 1024,
+  recordBytes: 8 * 1024,
+  storeBytes: 8 * 1024 * 1024,
+});
+function jsonNodeCount(value) {
+  let count = 0;
+  const pending = [value];
+  while (pending.length) {
+    const node = pending.pop();
+    count++;
+    if (node && typeof node === "object")
+      for (const child of Object.values(node)) pending.push(child);
+  }
+  return count;
+}
+export function storedCredential(credential, user) {
+  const allowed = new Set([
+    "usb",
+    "nfc",
+    "ble",
+    "smart-card",
+    "hybrid",
+    "internal",
+  ]);
+  return {
+    id: credential.id,
+    publicKey: encode(credential.publicKey),
+    counter: credential.counter,
+    transports: Array.isArray(credential.transports)
+      ? [
+          ...new Set(
+            credential.transports.filter((value) => allowed.has(value)),
+          ),
+        ]
+      : [],
+    user,
+  };
+}
+function validateWorkspaceStorage(candidate) {
+  let metadataBytes = 0;
+  for (const records of [candidate.users, candidate.credentials]) {
+    for (const [key, value] of Object.entries(records)) {
+      validateJsonValue(value);
+      const bytes =
+        Buffer.byteLength(JSON.stringify(value), "utf8") +
+        Buffer.byteLength(JSON.stringify(key), "utf8") +
+        2;
+      metadataBytes += bytes;
+      if (
+        bytes > workspaceStorageLimits.recordBytes ||
+        metadataBytes > workspaceStorageLimits.metadataBytes
+      )
+        throw Error(
+          "Workspace access is at capacity. Your saved work is safe.",
+        );
+    }
+  }
+  const byUser = new Map();
+  const nodesByUser = new Map();
+  let total = 0,
+    totalNodes = 0;
+  for (const [key, value] of Object.entries(candidate.workspaces)) {
+    validateJsonValue(value);
+    const bytes =
+      Buffer.byteLength(JSON.stringify(value), "utf8") +
+      Buffer.byteLength(JSON.stringify(key), "utf8") +
+      2;
+    const user = key.slice(0, key.lastIndexOf(":"));
+    const userBytes = (byUser.get(user) || 0) + bytes;
+    const nodes = jsonNodeCount(value);
+    const userNodes = (nodesByUser.get(user) || 0) + nodes;
+    total += bytes;
+    totalNodes += nodes;
+    if (
+      bytes > workspaceStorageLimits.entryBytes ||
+      userBytes > workspaceStorageLimits.userBytes ||
+      total > workspaceStorageLimits.totalBytes ||
+      userNodes > workspaceStorageLimits.userNodes ||
+      totalNodes > workspaceStorageLimits.totalNodes
+    )
+      throw Error(
+        "Saved workspace storage is full. Export a local copy or reduce your saved work and try again.",
+      );
+    byUser.set(user, userBytes);
+    nodesByUser.set(user, userNodes);
+  }
+}
 function persistWorkspaceCandidate(storePath, candidate) {
+  // Bound individual values and cumulative storage before serializing the shared DB.
+  validateWorkspaceStorage(candidate);
   // Serialize before any shared in-memory state changes or filesystem mutation.
   const serialized = JSON.stringify(candidate);
+  if (Buffer.byteLength(serialized, "utf8") > workspaceStorageLimits.storeBytes)
+    throw Error(
+      "Saved workspace storage is full. Export a local copy and try again.",
+    );
   mkdirSync(path.dirname(storePath), { recursive: true, mode: 0o700 });
   const temporary = storePath + ".tmp";
   writeFileSync(temporary, serialized, { mode: 0o600 });
@@ -104,11 +203,18 @@ export function createDemoServer({
     rates = new Map(),
     captureToken = encode(randomBytes(32));
   let db = { version: 1, users: {}, credentials: {}, workspaces: {} };
-  if (existsSync(storePath)) db = JSON.parse(readFileSync(storePath, "utf8"));
+  if (existsSync(storePath)) {
+    if (statSync(storePath).size > workspaceStorageLimits.storeBytes)
+      throw Error(
+        "Workspace store exceeds its safe capacity. Preserve it for offline recovery.",
+      );
+    db = JSON.parse(readFileSync(storePath, "utf8"));
+  }
   if (db.version !== 1 || !db.users || !db.credentials || !db.workspaces)
     throw new Error(
       "Unrecognized workspace store. Preserve it and investigate.",
     );
+  validateWorkspaceStorage(db);
   const persist = (candidate) => {
     db = persistWorkspaceCandidate(storePath, candidate);
   };
@@ -334,11 +440,7 @@ export function createDemoServer({
             throw Error(
               "This workspace has reached its access capacity. Existing passkeys still work.",
             );
-          const credential = {
-            ...c,
-            publicKey: encode(c.publicKey),
-            user: expected.user,
-          };
+          const credential = storedCredential(c, expected.user);
           persist({
             ...db,
             users: { ...db.users, [expected.user]: expected.record },
@@ -450,7 +552,7 @@ export function createDemoServer({
       } catch (e) {
         json(res, 400, {
           error:
-            /expired|already used|not registered|Sign in again|not match|already registered|too large|workspace type/.test(
+            /expired|already used|not registered|Sign in again|not match|already registered|too large|workspace type|Saved workspace storage is full|Workspace access is at capacity/.test(
               e.message,
             )
               ? e.message

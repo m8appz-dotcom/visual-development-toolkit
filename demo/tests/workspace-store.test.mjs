@@ -6,12 +6,18 @@ import { tmpdir } from "node:os";
 import {
   mkdtempSync,
   readFileSync,
+  writeFileSync,
   mkdirSync,
   rmdirSync,
   rmSync,
   existsSync,
 } from "node:fs";
-import { createDemoServer, saveWorkspaceCopy } from "../server.mjs";
+import {
+  createDemoServer,
+  saveWorkspaceCopy,
+  storedCredential,
+  workspaceStorageLimits,
+} from "../server.mjs";
 
 const nested = () => JSON.parse('{"x":'.repeat(5000) + "0" + "}".repeat(5000));
 function fixture(t) {
@@ -33,6 +39,124 @@ const empty = () => ({
   users: {},
   credentials: {},
   workspaces: {},
+});
+test("workspace byte budgets reject aggregate growth and preserve replacement and recovery", (t) => {
+  const file = fixture(t);
+  let database = empty();
+  const state = { draft: "😀".repeat(47000) };
+  database = saveWorkspaceCopy(database, "first", "content", state, file);
+  database = saveWorkspaceCopy(database, "first", "voice", state, file);
+  const prior = readFileSync(file, "utf8");
+  assert.throws(
+    () => saveWorkspaceCopy(database, "first", "film", state, file),
+    /storage is full/,
+  );
+  assert.equal(readFileSync(file, "utf8"), prior);
+  assert.equal(database.workspaces["first:film"], undefined);
+  // Replacement at the per-user limit must not double-count the previous slot.
+  database = saveWorkspaceCopy(database, "first", "content", state, file);
+  for (let user = 0; user < 19; user++)
+    database = saveWorkspaceCopy(
+      database,
+      "other-" + user,
+      "content",
+      state,
+      file,
+    );
+  database = saveWorkspaceCopy(database, "last", "content", state, file);
+  const full = readFileSync(file, "utf8");
+  assert.throws(
+    () => saveWorkspaceCopy(database, "overflow", "content", state, file),
+    /storage is full/,
+  );
+  assert.equal(readFileSync(file, "utf8"), full);
+  database = saveWorkspaceCopy(
+    database,
+    "first",
+    "content",
+    { draft: "smaller" },
+    file,
+  );
+  database = saveWorkspaceCopy(database, "overflow", "content", state, file);
+  assert.equal(database.workspaces["first:voice"].draft, state.draft);
+  assert.ok(
+    Buffer.byteLength(readFileSync(file, "utf8")) <
+      workspaceStorageLimits.storeBytes,
+  );
+  assert.throws(
+    () =>
+      saveWorkspaceCopy(
+        database,
+        "large",
+        "content",
+        { draft: "😀".repeat(50000) },
+        file,
+      ),
+    /storage is full/,
+  );
+});
+test("cumulative object-node budgets bound many small saved objects independently of bytes", (t) => {
+  const file = fixture(t);
+  let database = empty();
+  const state = { items: Array.from({ length: 19000 }, () => ({})) };
+  database = saveWorkspaceCopy(database, "first", "content", state, file);
+  assert.throws(
+    () => saveWorkspaceCopy(database, "first", "voice", state, file),
+    /storage is full/,
+  );
+  for (let i = 1; i < 5; i++)
+    database = saveWorkspaceCopy(database, "user-" + i, "content", state, file);
+  const prior = readFileSync(file, "utf8");
+  assert.throws(
+    () => saveWorkspaceCopy(database, "overflow", "content", state, file),
+    /storage is full/,
+  );
+  assert.equal(readFileSync(file, "utf8"), prior);
+  database = saveWorkspaceCopy(
+    database,
+    "first",
+    "content",
+    { items: [] },
+    file,
+  );
+  database = saveWorkspaceCopy(database, "overflow", "content", state, file);
+  assert.equal(database.workspaces["user-1:content"].items.length, 19000);
+});
+test("credential metadata is bounded and untrusted transports are reduced to known unique values", (t) => {
+  const file = fixture(t);
+  const credential = storedCredential(
+    {
+      id: "test",
+      publicKey: new Uint8Array([1, 2]),
+      counter: 0,
+      transports: ["internal", "internal", "hybrid", "x".repeat(190000)],
+    },
+    "first",
+  );
+  assert.deepEqual(credential.transports, ["internal", "hybrid"]);
+  assert.ok(Buffer.byteLength(JSON.stringify(credential)) < 200);
+  const database = empty();
+  database.credentials.bad = { publicKey: "x".repeat(9000) };
+  assert.throws(
+    () => saveWorkspaceCopy(database, "first", "content", {}, file),
+    /at capacity/,
+  );
+  assert.equal(existsSync(file), false);
+  delete database.credentials.bad;
+  for (let i = 0; i < 160; i++)
+    database.credentials[i] = { publicKey: "x".repeat(7000) };
+  assert.throws(
+    () => saveWorkspaceCopy(database, "first", "content", {}, file),
+    /at capacity/,
+  );
+  assert.equal(existsSync(file), false);
+});
+test("oversized existing stores fail closed without replacing their original data", (t) => {
+  const file = fixture(t);
+  const oversized = " ".repeat(workspaceStorageLimits.storeBytes + 1);
+  writeFileSync(file, oversized);
+  assert.throws(() => createDemoServer({ storePath: file }), /Preserve it/);
+  assert.equal(readFileSync(file, "utf8"), oversized);
 });
 test("a sub-200KB deeply nested workspace cannot poison another user's saved state", (t) => {
   const file = fixture(t);
