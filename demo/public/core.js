@@ -145,7 +145,7 @@ export function wireAccess(key, getState, setState) {
       const status = await response.json();
       modal(
         "Private workspace",
-        `<p>Save a private copy on this demo server using a passkey. Your browser keeps its local draft. The server stores your public credential and workspace; it never receives a PIN, fingerprint or private key.</p><p class="workspace-status">${status.signedIn ? "Signed in with a passkey." : "Not signed in."}</p><div class="action-row">${status.signedIn ? '<button class="solid" data-remote-save>Save private copy</button><button data-remote-load>Load private copy</button><button data-second-key>Add another passkey</button><button data-signout>Sign out</button>' : '<button class="solid" data-enroll>Create workspace with a passkey</button><button data-signin>Sign in with a passkey</button>'}</div><p>Add a second passkey after signing in so you retain access if one authenticator is lost.</p><p id="auth-message" role="status"></p>${recoveryControls}`,
+        `<p>Save a private copy using a passkey. Your browser keeps its local draft. The server stores your public credential and workspace; it never receives a PIN, fingerprint or private key.</p><p class="workspace-status">${status.signedIn ? "Signed in with a passkey." : "Not signed in."}</p>${!status.signedIn && status.invitationRequired && status.registrationOpen ? '<label>Invitation code<input id="workspace-invitation" type="password" autocomplete="off" maxlength="43" spellcheck="false"></label><p>New private workspaces require an invitation from the administrator.</p>' : ""}<div class="action-row">${status.signedIn ? '<button class="solid" data-remote-save>Save private copy</button><button data-remote-load>Load private copy</button><button data-second-key>Add another passkey</button><button data-signout>Sign out</button>' : `${status.registrationOpen !== false ? '<button class="solid" data-enroll>Create workspace with a passkey</button>' : "<p>New private workspaces are closed. Existing passkeys still work.</p>"}<button data-signin>Sign in with a passkey</button>`}</div><p>Add a second passkey after signing in so you retain access if one authenticator is lost.</p><p id="auth-message" role="status"></p>${recoveryControls}`,
       );
       wireRecovery(key, getState, setState);
       const message = (text) => {
@@ -183,7 +183,12 @@ export function wireAccess(key, getState, setState) {
           );
         const { startRegistration, startAuthentication } =
           await import("/vendor/webauthn.js");
-        const options = await request(kind + "/options");
+        const options = await request(
+          kind + "/options",
+          kind === "register"
+            ? { invite: $("#workspace-invitation")?.value || "" }
+            : {},
+        );
         let response;
         try {
           response = await (kind === "register"

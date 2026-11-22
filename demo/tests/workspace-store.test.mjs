@@ -14,6 +14,7 @@ import {
 } from "node:fs";
 import {
   createDemoServer,
+  invitationHash,
   saveWorkspaceCopy,
   registrationCapacityReached,
   storedCredential,
@@ -281,6 +282,9 @@ test("hosted HTTP rejects deeply nested auth and engine input while access remai
   let executions = 0;
   const server = createDemoServer({
     hosted: true,
+    registrationInvites: [
+      invitationHash(Buffer.alloc(32, 8).toString("base64url")),
+    ],
     origin,
     storePath: file,
     engine: {
@@ -338,7 +342,10 @@ test("hosted HTTP rejects deeply nested auth and engine input while access remai
   assert.equal(executions, 0);
   assert.equal(existsSync(file), false);
   assert.equal((await post("/auth/login/options", "{}")).status, 200);
-  const registration = await post("/auth/register/options", "{}");
+  const registration = await post(
+    "/auth/register/options",
+    JSON.stringify({ invite: Buffer.alloc(32, 8).toString("base64url") }),
+  );
   assert.equal(registration.status, 200);
   assert.equal(registration.body.rp.id, "workspace.example.test");
 });
