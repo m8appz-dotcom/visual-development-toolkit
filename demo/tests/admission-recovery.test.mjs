@@ -153,6 +153,76 @@ test("previously valid account, workspace and credential allocations load withou
     assert.deepEqual(saved.workspaces, database.workspaces);
   }
 });
+test("original-format aggregate and access allocations survive stricter global limits", (t) => {
+  const file = fixture(t);
+  for (const kind of ["nodes", "bytes", "entry", "metadata", "depth"]) {
+    const database = empty();
+    const users = kind === "bytes" ? 12 : kind === "nodes" ? 4 : 1;
+    for (let i = 0; i < users; i++) {
+      const user = "user-" + i;
+      database.users[user] = { id: user };
+      for (const slot of ["content", "voice"])
+        database.workspaces[user + ":" + slot] =
+          kind === "nodes"
+            ? { items: Array.from({ length: 14000 }, () => ({})) }
+            : kind === "bytes"
+              ? { draft: "x".repeat(180000) }
+              : { draft: "old" };
+    }
+    database.credentials.key = {
+      id: "key",
+      user: "user-0",
+      publicKey: "fixture",
+      counter: 9,
+    };
+    if (kind === "entry")
+      database.workspaces["user-0:content"] = {
+        items: Array.from({ length: 25000 }, () => ({})),
+      };
+    if (kind === "metadata")
+      database.credentials.key.transports = ["x".repeat(150000)];
+    if (kind === "depth")
+      database.workspaces["user-0:content"] = JSON.parse(
+        '{"x":'.repeat(40) + "0" + "}".repeat(40),
+      );
+    const original = JSON.stringify(database);
+    writeFileSync(file, original);
+    const loaded = loadWorkspaceStore(file);
+    assert.ok(loaded.legacy, kind);
+    assert.equal(readFileSync(file, "utf8"), original);
+    createDemoServer({ storePath: file });
+    const saved = persistWorkspaceCandidate(
+      file,
+      {
+        ...loaded.database,
+        credentials: {
+          key: { ...loaded.database.credentials.key, counter: 10 },
+        },
+      },
+      loaded.legacy,
+    );
+    assert.deepEqual(saved.workspaces, database.workspaces);
+    assert.equal(saved.credentials.key.counter, 10);
+    const reopened = loadWorkspaceStore(file);
+    assert.ok(reopened.legacy.aggregate);
+    assert.ok(reopened.legacy.accessAllocations);
+    assert.deepEqual(reopened.legacy.aggregate, loaded.legacy.aggregate);
+    const current = readFileSync(file, "utf8");
+    assert.throws(
+      () =>
+        saveWorkspaceCopy(
+          reopened.database,
+          "user-0",
+          "film",
+          { draft: "growth" },
+          file,
+          reopened.legacy,
+        ),
+      /storage is full/,
+    );
+    assert.equal(readFileSync(file, "utf8"), current);
+  }
+});
 test("legacy shrink preserves recovery mode across restart and rejects new identities", (t) => {
   const file = fixture(t),
     database = empty();
