@@ -6,7 +6,7 @@ Calls the actual FastMCP stdio gateway: create_project, import_target, verify_or
 
 ## Setup
 
-Use Python 3.10+ with the repository development requirements installed in an isolated environment (`python -m pip install -r requirements-dev.txt`). Set `DEMO_PYTHON` to that executable. Each run supplies its own MODDING_LAB_ROOT; it never uses the native lab default. This portable workflow starts no Docker containers or native editor applications.
+Use Python 3.12 or newer with the repository development requirements installed in an isolated environment (`python -m pip install -r requirements-dev.txt`). The native gateway uses `Path.is_junction()` and `hashlib.file_digest()`; Python 3.10 and 3.11 cannot run this connected demo. Set `DEMO_PYTHON` to that executable. Each run supplies its own MODDING_LAB_ROOT; it never uses the native lab default. This portable workflow starts no Docker containers or native editor applications.
 
 Run the demo with `npm start` from this directory and open its documented localhost origin. The static directory is `public`; configuration, adapters and private run folders are never served as static files.
 
