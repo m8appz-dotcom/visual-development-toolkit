@@ -18,7 +18,7 @@ def source_bytes(path: Path) -> bytes:
 
 def plugin_package(destination: Path) -> list[str]:
     """Source-only focused package; no installed engines or third-party sample assets."""
-    files = [".codex-plugin/plugin.json", "mcp.json", "server/bootstrap_mcp.py",
+    files = ["plugin.json", ".codex-plugin/plugin.json", "mcp.json", "server/bootstrap_mcp.py",
              "server/lab_mcp.py", "server/native_mcp.py", "server/docker_mcp.py",
              "skills/app-to-mcp/SKILL.md", "skills/app-to-mcp/agents/openai.yaml"]
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -29,15 +29,27 @@ def plugin_package(destination: Path) -> list[str]:
             archive.writestr(info, source_bytes(PLUGIN / name))
         setup = zipfile.ZipInfo("SETUP.md", date_time=(2026, 11, 23, 0, 0, 0))
         setup.compress_type = zipfile.ZIP_DEFLATED
-        archive.writestr(setup, "# Toolkit application bridge\n\nThis source-only Codex plugin packages the gateway, MCP connections and the app-to-mcp skill. It requires an existing configured Toolkit runtime. Set MODDING_LAB_ROOT privately before invoking it. Native mode uses that runtime's interpreter; no engines are installed or started automatically. For portable gateway testing, set MODDING_LAB_MODE=portable and install the repository's pinned MCP development dependency in your interpreter. The legacy plugin name is retained for compatibility.\n")
+        runtime_setup = zipfile.ZipInfo("configure_runtime.py", date_time=(2026, 11, 23, 0, 0, 0))
+        runtime_setup.compress_type = zipfile.ZIP_DEFLATED
+        archive.writestr(runtime_setup, source_bytes(ROOT / "configure_plugin.py"))
+        files.append("configure_runtime.py")
+        archive.writestr(setup, "# Toolkit application bridge\n\nThis source-only Codex plugin packages the gateway, MCP connections and the app-to-mcp skill. It requires an existing configured Toolkit runtime. Configure only your private copy: python configure_runtime.py --plugin-root . --runtime-root PATH_TO_EXISTING_RUNTIME --python PATH_TO_EXISTING_PYTHON --mode portable. This sets the private runtime variables and interpreter PATH in mcp.json. Do not commit that machine-specific configuration. Native mode uses that runtime's interpreter; no engines are installed or started automatically. For portable gateway testing, set MODDING_LAB_MODE=portable and install the repository's pinned MCP development dependency in your interpreter. The legacy plugin name is retained for compatibility.\n")
     return files
 
 
-def build(run: Path):
+def build(run: Path, client_run: Path | None = None):
     run = run.resolve(strict=True)
     evidence = json.loads((run / "bridge-evidence.json").read_text(encoding="utf-8"))
     if not evidence.get("checks") or any(c["status"] != "passed" for c in evidence["checks"]):
         raise ValueError("Choose a completed native run with no failed checks")
+    if client_run is not None:
+        client = json.loads((client_run / "client-checks.json").read_text(encoding="utf-8"))
+        if client.get("status") != "passed" or not all(client.get(k) for k in ("pluginSkillDiscovered", "packageReadBackPassed", "inputUnchanged", "outsidePathRejected")):
+            raise ValueError("Choose a completed isolated Codex client check")
+        evidence["codexClient"] = {"pluginVersion": client["pluginVersion"], "skillDiscovered": True,
+            "toolCount": client["toolCount"], "calls": client["calls"], "inputUnchanged": True,
+            "packageReadBackPassed": True, "outsidePathRejected": True,
+            "scope": "Fresh isolated Codex CLI client; portable gateway. Native adapters remain separate."}
     # A private runtime path or trace is never a public gallery input.
     public = ROOT / "demo/public"
     target = public / "assets/app-bridge"
@@ -49,7 +61,8 @@ def build(run: Path):
         item = {"id": len(manifest), "group": category, "category": category,
                 "project": "Application → MCP → Codex plugin", "path": "app-bridge/" + name,
                 "name": name, "label": label, "type": kind, "mime": mime,
-                "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+                "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+                "cover": f"covers/workflow-{len(manifest)+1:02d}.svg"}
         if preview is not None:
             item["preview"] = preview
         manifest.append(item)
@@ -68,7 +81,7 @@ def build(run: Path):
     data("tool-contracts.json", "MCP tool contracts", "mcp", schemas)
     add("lab_mcp.py", "MCP server implementation", "mcp", source_bytes(PLUGIN / "server/lab_mcp.py"))
     add("mcp.json", "Bundled MCP connections", "mcp", source_bytes(PLUGIN / "mcp.json"), "data", "application/json")
-    add("plugin.json", "Codex plugin manifest", "plugin", source_bytes(PLUGIN / ".codex-plugin/plugin.json"), "data", "application/json")
+    add("plugin.json", "Codex plugin manifest", "plugin", source_bytes(PLUGIN / "plugin.json"), "data", "application/json")
     add("SKILL.md", "Reusable app-to-MCP workflow", "skill", source_bytes(PLUGIN / "skills/app-to-mcp/SKILL.md"))
     add("openai.yaml", "Skill invocation metadata", "skill", source_bytes(PLUGIN / "skills/app-to-mcp/agents/openai.yaml"))
     data("bridge-evidence.json", "Recorded native MCP run", "evidence", evidence)
@@ -86,7 +99,7 @@ def build(run: Path):
         "universal-modder": "CLI help responds; generation and application modification not exercised here",
         "Blender": "Installed binary reports version 5.2.2 LTS; no scene or render operation claimed here",
         "fal / ComfyUI": "Generation not exercised; no paid calls were made",
-        "Codex package": "Source manifest, MCP configuration and skill included; fresh-client installation acceptance is separate",
+        "Codex package": "Fresh isolated Codex client check is included in the recorded evidence" if client_run else "Fresh-client installation not claimed for this build",
     })
     (public / "assets/collection.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     return manifest
@@ -95,6 +108,7 @@ def build(run: Path):
 def static_copy(destination: Path):
     public = ROOT / "demo/public"
     destination.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(public / "covers", destination / "covers", dirs_exist_ok=True)
     for name in ("app.js", "base.css", "products.css", "ui.css", "core.js", "engine-client.js",
                  "portable-package.js", "file-preview.js", "zip.js"):
         (destination / name).write_bytes(source_bytes(public / name))
@@ -111,8 +125,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", type=Path, required=True)
     parser.add_argument("--static-output", type=Path)
+    parser.add_argument("--client-run", type=Path)
     args = parser.parse_args()
-    manifest = build(args.run)
+    manifest = build(args.run, args.client_run)
     if args.static_output:
         static_copy(args.static_output)
     print(json.dumps({"artifacts": len(manifest), "application": "AssetStudio", "package": "source-only Codex plugin"}))

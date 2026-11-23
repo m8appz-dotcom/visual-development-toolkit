@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "game-modding-toolkit",
-  "version": "1.2.0",
-  "description": "Create and improve games and visually rich apps with asset generation, conversion, code analysis and verified integration.",
+  "version": "1.2.2",
+  "description": "Build application MCP integrations and package tools, server connections and reusable skills as Codex plugins.",
   "author": {
     "name": "Modding Lab"
   },
@@ -10,8 +10,8 @@
     "com.openai": {
       "interface": {
         "displayName": "Visual Development Toolkit",
-        "shortDescription": "Build games and visual apps",
-        "longDescription": "Create and improve games and visually rich apps with asset generation, conversion, code analysis and verified integration. Includes universal-modder, REA, Ghidra, ILSpy and AssetStudio on Windows and Docker. Fal generation requires an API key; 3D rendering requires Blender.",
+        "shortDescription": "App-to-MCP and Codex plugin engineering",
+        "longDescription": "Inspect application capabilities with REA, Ghidra and ILSpy; expose supported operations through scoped MCP adapters; package the tools and skills for Codex. Existing asset pipelines remain available separately.",
         "developerName": "Modding Lab",
         "category": "Developer Tools",
         "capabilities": [
@@ -20,9 +20,9 @@
           "Write"
         ],
         "defaultPrompt": [
-          "Create a playable game prototype and prepare its visual assets.",
-          "Improve this app with consistent icons, illustrations and animations.",
-          "Modify this project, integrate its assets and verify the result."
+          "Map this application's supported capabilities and design a scoped MCP integration.",
+          "Package this MCP server and its reusable workflows as a Codex plugin.",
+          "Validate the application integration with an isolated reproducible fixture."
         ]
       }
     }

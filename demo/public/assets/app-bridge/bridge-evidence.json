@@ -67,5 +67,20 @@
   "limitations": [
     "A native TextAsset fixture validates this adapter path, not every AssetStudio export format.",
     "No real holder passkey enrollment or recovery is asserted by this machine-only MCP run."
-  ]
+  ],
+  "codexClient": {
+    "pluginVersion": "1.2.2",
+    "skillDiscovered": true,
+    "toolCount": 16,
+    "calls": [
+      "create_project",
+      "import_target",
+      "verify_originals",
+      "package_project"
+    ],
+    "inputUnchanged": true,
+    "packageReadBackPassed": true,
+    "outsidePathRejected": true,
+    "scope": "Fresh isolated Codex CLI client; portable gateway. Native adapters remain separate."
+  }
 }

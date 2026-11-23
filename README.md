@@ -8,14 +8,16 @@ Build MCP integrations that expose real application capabilities, then package t
 
 An actual MCP run inspected and extracted an authored Unity TextAsset using AssetStudio/AssetBridge, inspected the authored adapter with ILSpy, preserved its originals and verified the packaged output. The gallery exposes the capability map, source, tool contracts, recorded results and a source-only Codex plugin package. Browser file verification and exports are separate from the recorded native execution.
 
+A fresh isolated Codex client installed version1.2.2, discovered the skill and16 tools, and completed import, verification and packaging with byte-checked ZIP read-back. It also rejected an outside-project path. [Client validation and setup](docs/APP-TO-MCP.md#fresh-codex-client-validation).
+
 The existing visual-asset and application-analysis integrations remain available. Their installation, configuration and coverage differ; a successful fixture does not establish compatibility with every application or every export format.
 
 
-![Application-to-MCP showcase on desktop](docs/images/app-mcp-desktop.jpg)
+![Application-to-MCP showcase on desktop](docs/images/workflow-covers-desktop.jpg)
 
 <details><summary>Phone view</summary>
 
-![Application-to-MCP showcase on a phone](docs/images/app-mcp-mobile.jpg)
+![Application-to-MCP showcase on a phone](docs/images/workflow-covers-mobile.jpg)
 
 </details>
 

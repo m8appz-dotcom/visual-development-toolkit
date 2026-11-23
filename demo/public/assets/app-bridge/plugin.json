@@ -1,27 +1,30 @@
 {
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "game-modding-toolkit",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Build application MCP integrations and package tools, server connections and reusable skills as Codex plugins.",
   "author": {
     "name": "Modding Lab"
   },
-  "skills": "./skills/",
-  "mcpServers": "./mcp.json",
-  "interface": {
-    "displayName": "Visual Development Toolkit",
-    "shortDescription": "App-to-MCP and Codex plugin engineering",
-    "longDescription": "Inspect application capabilities with REA, Ghidra and ILSpy; expose supported operations through scoped MCP adapters; package the tools and skills for Codex. Existing asset pipelines remain available separately.",
-    "developerName": "Modding Lab",
-    "category": "Developer Tools",
-    "capabilities": [
-      "Interactive",
-      "Read",
-      "Write"
-    ],
-    "defaultPrompt": [
-      "Map this application's supported capabilities and design a scoped MCP integration.",
-      "Package this MCP server and its reusable workflows as a Codex plugin.",
-      "Validate the application integration with an isolated reproducible fixture."
-    ]
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Visual Development Toolkit",
+        "shortDescription": "App-to-MCP and Codex plugin engineering",
+        "longDescription": "Inspect application capabilities with REA, Ghidra and ILSpy; expose supported operations through scoped MCP adapters; package the tools and skills for Codex. Existing asset pipelines remain available separately.",
+        "developerName": "Modding Lab",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Interactive",
+          "Read",
+          "Write"
+        ],
+        "defaultPrompt": [
+          "Map this application's supported capabilities and design a scoped MCP integration.",
+          "Package this MCP server and its reusable workflows as a Codex plugin.",
+          "Validate the application integration with an isolated reproducible fixture."
+        ]
+      }
+    }
   }
 }

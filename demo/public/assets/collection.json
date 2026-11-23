@@ -10,7 +10,8 @@
     "type": "data",
     "mime": "application/json",
     "bytes": 454,
-    "sha256": "3414daebaab40b003a3aab42ae24a9c05c2d685abfaa723f2b785e679bd7bce0"
+    "sha256": "3414daebaab40b003a3aab42ae24a9c05c2d685abfaa723f2b785e679bd7bce0",
+    "cover": "covers/workflow-01.svg"
   },
   {
     "id": 1,
@@ -23,7 +24,8 @@
     "type": "document",
     "mime": "text/plain",
     "bytes": 3864,
-    "sha256": "64658416201dd818928bb3ac47e3b30563ed95058bea923a671eb0f163cbbc4e"
+    "sha256": "64658416201dd818928bb3ac47e3b30563ed95058bea923a671eb0f163cbbc4e",
+    "cover": "covers/workflow-02.svg"
   },
   {
     "id": 2,
@@ -36,7 +38,8 @@
     "type": "data",
     "mime": "application/json",
     "bytes": 9305,
-    "sha256": "9c1b2967e9251a9581f2198549d2912efd237982b26ad2fe8ba4ece0d221cf49"
+    "sha256": "9c1b2967e9251a9581f2198549d2912efd237982b26ad2fe8ba4ece0d221cf49",
+    "cover": "covers/workflow-03.svg"
   },
   {
     "id": 3,
@@ -49,7 +52,8 @@
     "type": "document",
     "mime": "text/plain",
     "bytes": 17083,
-    "sha256": "0fac3976a8195e71ac9f472c33276b973bca73676fc9d5880b72f34620e73d74"
+    "sha256": "0fac3976a8195e71ac9f472c33276b973bca73676fc9d5880b72f34620e73d74",
+    "cover": "covers/workflow-04.svg"
   },
   {
     "id": 4,
@@ -62,7 +66,8 @@
     "type": "data",
     "mime": "application/json",
     "bytes": 769,
-    "sha256": "4a04ebbae1b35b3349c499532760b05803c9e230d69c4f35121b533a1b496e29"
+    "sha256": "4a04ebbae1b35b3349c499532760b05803c9e230d69c4f35121b533a1b496e29",
+    "cover": "covers/workflow-05.svg"
   },
   {
     "id": 5,
@@ -74,8 +79,9 @@
     "label": "Codex plugin manifest",
     "type": "data",
     "mime": "application/json",
-    "bytes": 1099,
-    "sha256": "6a2730e1a0199a79e70d54f67454c80d3983227ee76535eb5d756d0fe9f9341f"
+    "bytes": 1235,
+    "sha256": "6c269d3c044b2f7cb2e86b02020508a9ec20de3940b7ab003cb2570e3142fa81",
+    "cover": "covers/workflow-06.svg"
   },
   {
     "id": 6,
@@ -88,7 +94,8 @@
     "type": "document",
     "mime": "text/plain",
     "bytes": 3092,
-    "sha256": "401566c936b24bf2fe3cea83370372140866ce490e5067c6af5ee8ec5e6db693"
+    "sha256": "401566c936b24bf2fe3cea83370372140866ce490e5067c6af5ee8ec5e6db693",
+    "cover": "covers/workflow-07.svg"
   },
   {
     "id": 7,
@@ -101,7 +108,8 @@
     "type": "document",
     "mime": "text/plain",
     "bytes": 263,
-    "sha256": "9e4f556cd116d7bb63d0acbaccb8dd651a65d0050bea8336b85462a2d3629655"
+    "sha256": "9e4f556cd116d7bb63d0acbaccb8dd651a65d0050bea8336b85462a2d3629655",
+    "cover": "covers/workflow-08.svg"
   },
   {
     "id": 8,
@@ -113,8 +121,9 @@
     "label": "Recorded native MCP run",
     "type": "data",
     "mime": "application/json",
-    "bytes": 1811,
-    "sha256": "cff3dc1f7d77e5f3bf93cf74bc4b891fd763eae0222b5b98f7e998a165278689"
+    "bytes": 2229,
+    "sha256": "996b432ea06869f20807b63db10962b8476bbfe5b8e696eb261de997cf1640a7",
+    "cover": "covers/workflow-09.svg"
   },
   {
     "id": 9,
@@ -128,6 +137,7 @@
     "mime": "application/octet-stream",
     "bytes": 334,
     "sha256": "23f21168725f245a6db00a4bdeeccbcd650cb5e3d80aa5a005d4459139028e65",
+    "cover": "covers/workflow-10.svg",
     "preview": [
       "Unity TextAsset fixture",
       "Object: LabReadme",
@@ -145,7 +155,8 @@
     "type": "document",
     "mime": "text/plain",
     "bytes": 58,
-    "sha256": "1dd4db1bed41e6433c4e499ba61339327844a45eb1668c9407554de8587bd354"
+    "sha256": "1dd4db1bed41e6433c4e499ba61339327844a45eb1668c9407554de8587bd354",
+    "cover": "covers/workflow-11.svg"
   },
   {
     "id": 11,
@@ -157,16 +168,17 @@
     "label": "Downloadable Codex plugin",
     "type": "package",
     "mime": "application/zip",
-    "bytes": 12114,
-    "sha256": "a05839199eab9cf07cf0364db86b0908e3770405ad86bedf3336327b1c9072a7",
+    "bytes": 13871,
+    "sha256": "e9176d73b8979e90194b9af87984cd8a4e7de9649eda21ba403cdd8a2ab3eade",
+    "cover": "covers/workflow-12.svg",
     "preview": [
+      "plugin.json",
       ".codex-plugin/plugin.json",
       "mcp.json",
       "server/bootstrap_mcp.py",
       "server/lab_mcp.py",
       "server/native_mcp.py",
-      "server/docker_mcp.py",
-      "skills/app-to-mcp/SKILL.md"
+      "server/docker_mcp.py"
     ]
   },
   {
@@ -179,7 +191,8 @@
     "label": "Integration verification scope",
     "type": "data",
     "mime": "application/json",
-    "bytes": 791,
-    "sha256": "442d27f2b96122a0753c4493e2939b62f540293ed1db0001a5f0b2babbf5ae3b"
+    "bytes": 758,
+    "sha256": "5818ac4bee5310b580afc4ce0fb274088e74d75e87d9094d172f814e233bfda7",
+    "cover": "covers/workflow-13.svg"
   }
 ]

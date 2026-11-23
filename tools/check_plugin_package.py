@@ -35,6 +35,9 @@ async def check(package: Path, work: Path):
             destination.parent.mkdir(parents=True, exist_ok=True)
             destination.write_bytes(archive.read(item))
     manifest = json.loads((plugin / ".codex-plugin/plugin.json").read_text())
+    canonical = json.loads((plugin / "plugin.json").read_text())
+    if any(canonical[k] != manifest[k] for k in ("name", "version", "description")):
+        raise ValueError("Canonical and compatibility manifests differ")
     for key in ("skills", "mcpServers"):
         destination = (plugin / manifest[key]).resolve()
         if not destination.is_relative_to(plugin.resolve()) or not destination.exists():
