@@ -20,10 +20,10 @@ class PluginIdentityTests(unittest.TestCase):
             path.write_bytes((ROOT/'plugins/game-modding-toolkit/mcp.json').read_bytes())
             result=configure.configure(root,plugin_root=plugin,python=sys.executable,mode='portable')
             for server in result['mcpServers'].values():
-                self.assertEqual(server['command'],pathlib.Path(sys.executable).name)
+                self.assertEqual(server['command'],pathlib.Path(sys.executable).resolve().name)
                 self.assertFalse(pathlib.Path(server['command']).is_absolute())
                 self.assertEqual(server['env']['MODDING_LAB_MODE'],'portable')
-                self.assertTrue(server['env']['PATH'].startswith(str(pathlib.Path(sys.executable).parent)))
+                self.assertTrue(server['env']['PATH'].startswith(str(pathlib.Path(sys.executable).resolve().parent)))
 
     def test_download_package_includes_canonical_manifest_and_runtime_setup(self):
         with zipfile.ZipFile(ROOT/'demo/public/assets/app-bridge/toolkit-codex-plugin.zip') as package:
