@@ -1,0 +1,4 @@
+interface:
+  display_name: "Application to MCP"
+  short_description: "Build app adapters and package Codex plugins"
+  default_prompt: "Use $app-to-mcp to expose an application's real capabilities through MCP and package the tools and workflow as a Codex plugin."

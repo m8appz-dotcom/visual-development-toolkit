@@ -1,0 +1,360 @@
+[
+  {
+    "name": "component_status",
+    "description": "Check the actual Docker engine and all installed analysis and Windows components.",
+    "inputSchema": {
+      "properties": {},
+      "title": "component_statusArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "create_project",
+    "description": "Create an isolated project with input, output, reports and backups folders.",
+    "inputSchema": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "create_projectArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "import_target",
+    "description": "Copy a caller-selected file or folder into project input and record hashes. Originals remain untouched.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "source_path": {
+          "title": "Source Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name",
+        "source_path"
+      ],
+      "title": "import_targetArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "recon_game",
+    "description": "Inspect a caller-selected Windows game folder with universal-modder without launching it.",
+    "inputSchema": {
+      "properties": {
+        "game_path": {
+          "title": "Game Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "game_path"
+      ],
+      "title": "recon_gameArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "run_um",
+    "description": "Run universal-modder's scan, sprite, video, backup, render3d, comfy, fal, kb or publish check CLI in a project. Use --help to discover exact flags. Outputs must stay in the project. Cloud generation requires the user's key and authorized cost.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "args": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Args",
+          "type": "array"
+        },
+        "platform": {
+          "default": "docker",
+          "title": "Platform",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name",
+        "args"
+      ],
+      "title": "run_umArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "rea_command",
+    "description": "Run REA analysis commands inside Docker. Paths refer to /lab/projects/PROJECT. Full REA MCP tools are also connected separately.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "args": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Args",
+          "type": "array"
+        }
+      },
+      "required": [
+        "project_name",
+        "args"
+      ],
+      "title": "rea_commandArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "decompile_dotnet",
+    "description": "Decompile a managed assembly into C# with the real ILSpy command-line engine.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "input_file": {
+          "title": "Input File",
+          "type": "string"
+        },
+        "type_name": {
+          "default": "",
+          "title": "Type Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name",
+        "input_file"
+      ],
+      "title": "decompile_dotnetArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "inspect_unity_assets",
+    "description": "Inventory Unity assets with the original Windows AssetStudio libraries. Supported upstream versions: Unity 3.4â€“2022.1.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "input_path": {
+          "title": "Input Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name",
+        "input_path"
+      ],
+      "title": "inspect_unity_assetsArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "export_unity_assets",
+    "description": "Export Unity textures/sprites to PNG, text, audio, meshes to OBJ and other objects to dumps. FBX animation export remains available in the installed AssetStudio GUI.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "input_path": {
+          "title": "Input Path",
+          "type": "string"
+        },
+        "asset_type": {
+          "default": "all",
+          "title": "Asset Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name",
+        "input_path"
+      ],
+      "title": "export_unity_assetsArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "list_project_files",
+    "description": "List project artifacts, their sizes and relative paths.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "folder": {
+          "default": "output",
+          "title": "Folder",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name"
+      ],
+      "title": "list_project_filesArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "read_project_text",
+    "description": "Read a bounded UTF-8 source or report file from a project.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "file_path": {
+          "title": "File Path",
+          "type": "string"
+        },
+        "max_chars": {
+          "default": 20000,
+          "title": "Max Chars",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "project_name",
+        "file_path"
+      ],
+      "title": "read_project_textArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "verify_originals",
+    "description": "Compare imported originals against the hashes saved at import time.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name"
+      ],
+      "title": "verify_originalsArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "windows_game_tool",
+    "description": "Use universal-modder's native Windows game tools. Launch, capture, input and recording require explicit human authorization for visible interaction. kill and registry edits are excluded.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "args": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Args",
+          "type": "array"
+        },
+        "visible_interaction_authorized": {
+          "default": false,
+          "title": "Visible Interaction Authorized",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "project_name",
+        "args"
+      ],
+      "title": "windows_game_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "open_windows_tool",
+    "description": "Open the installed ILSpy or original AssetStudio GUI when the human explicitly requests that visible window. AssetStudio retains its native FBX and animation export functions.",
+    "inputSchema": {
+      "properties": {
+        "tool": {
+          "title": "Tool",
+          "type": "string"
+        },
+        "visible_interaction_authorized": {
+          "default": false,
+          "title": "Visible Interaction Authorized",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "tool"
+      ],
+      "title": "open_windows_toolArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "package_mod",
+    "description": "Optional legacy mod packaging, only for an explicit mod request. For game/app source or assets use package_project.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "output_folder": {
+          "title": "Output Folder",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name",
+        "output_folder"
+      ],
+      "title": "package_modArguments",
+      "type": "object"
+    }
+  },
+  {
+    "name": "package_project",
+    "description": "Bundle authored game/app source and visual assets from a project output folder into a ZIP. Does not build an installer or publish anything.",
+    "inputSchema": {
+      "properties": {
+        "project_name": {
+          "title": "Project Name",
+          "type": "string"
+        },
+        "output_folder": {
+          "title": "Output Folder",
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_name",
+        "output_folder"
+      ],
+      "title": "package_projectArguments",
+      "type": "object"
+    }
+  }
+]

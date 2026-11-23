@@ -1,0 +1,10 @@
+{
+  "AssetStudio / AssetBridge": "Native fixture inspection and TextAsset export passed through MCP",
+  "ILSpy": "Authored adapter decompilation passed through MCP",
+  "REA": "Managed assembly identity inspection completed; later member calls failed MCP transport and remain unverified",
+  "Ghidra": "MCP program-session query responded; no native target analysis claimed by this case",
+  "universal-modder": "CLI help responds; generation and application modification not exercised here",
+  "Blender": "Installed binary reports version 5.2.2 LTS; no scene or render operation claimed here",
+  "fal / ComfyUI": "Generation not exercised; no paid calls were made",
+  "Codex package": "Source manifest, MCP configuration and skill included; fresh-client installation acceptance is separate"
+}

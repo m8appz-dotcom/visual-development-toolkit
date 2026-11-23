@@ -1,0 +1,13 @@
+{
+  "application": "AssetStudio",
+  "adapter": "Authored Windows AssetBridge",
+  "inspect_unity_assets": {
+    "nativeEntryPoint": "AssetsManager.LoadFiles / LoadFolder",
+    "observed": "LabReadme · TextAsset"
+  },
+  "export_unity_assets": {
+    "nativeEntryPoint": "TextAsset.m_Script",
+    "observed": "Extracted text matches the authored fixture"
+  },
+  "coverage": "TextAsset fixture path only; other export types were not exercised by this run"
+}

@@ -8,9 +8,10 @@ def payload(result):
     return result.structuredContent if result.structuredContent is not None else json.loads(next(c.text for c in result.content if c.type=='text'))
 async def main():
     data=json.load(sys.stdin);directory=Path(data['directory']).resolve()
-    assets=ROOT/'demo/public/assets';manifest=json.loads((assets/'manifest.json').read_text())
+    assets=ROOT/'demo/public/assets';manifest=json.loads((assets/'collection.json').read_text())
     allowed={a['path']:a for a in manifest};paths=list(dict.fromkeys(data['paths']))
     if any(p not in allowed for p in paths):raise ValueError('Choose a file from the committed collection')
+    if data['action']=='package':paths=list(dict.fromkeys(paths+[a['path'] for a in manifest if a.get('required') is True]))
     inputs=directory/'inputs';inputs.mkdir()
     hashes={}
     for rel in paths:
@@ -23,7 +24,7 @@ async def main():
     async with contextlib.AsyncExitStack() as stack:
         read,write=await stack.enter_async_context(stdio_client(StdioServerParameters(command=sys.executable,args=['-B',str(ROOT/'plugins/game-modding-toolkit/server/lab_mcp.py')],env=env)))
         session=await stack.enter_async_context(ClientSession(read,write));await session.initialize()
-        await session.call_tool('create_project',{'name':'demo-package'})
+        payload(await session.call_tool('create_project',{'name':'demo-package'}))
         payload(await session.call_tool('import_target',{'project_name':'demo-package','source_path':str(inputs)}))
         integrity=payload(await session.call_tool('verify_originals',{'project_name':'demo-package'}))
         if not integrity['ok']:raise RuntimeError('Original verification failed')

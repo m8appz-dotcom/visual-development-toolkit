@@ -1,0 +1,38 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "modding-lab": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "${PLUGIN_ROOT}/server/bootstrap_mcp.py",
+        "gateway"
+      ],
+      "env": {
+        "PYTHONIOENCODING": "utf-8"
+      }
+    },
+    "ghidra": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "${PLUGIN_ROOT}/server/bootstrap_mcp.py",
+        "ghidra"
+      ],
+      "env": {
+        "PYTHONIOENCODING": "utf-8"
+      }
+    },
+    "rea": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "${PLUGIN_ROOT}/server/bootstrap_mcp.py",
+        "rea"
+      ],
+      "env": {
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}

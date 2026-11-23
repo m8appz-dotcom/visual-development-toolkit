@@ -3,36 +3,34 @@
   "mcpServers": {
     "modding-lab": {
       "type": "stdio",
-      "command": "D:\\modding-lab\\windows\\venv\\Scripts\\python.exe",
+      "command": "python",
       "args": [
-        "${PLUGIN_ROOT}/server/lab_mcp.py"
+        "${PLUGIN_ROOT}/server/bootstrap_mcp.py",
+        "gateway"
       ],
       "env": {
-        "MODDING_LAB_ROOT": "D:\\modding-lab",
         "PYTHONIOENCODING": "utf-8"
       }
     },
     "ghidra": {
       "type": "stdio",
-      "command": "D:\\modding-lab\\windows\\venv\\Scripts\\python.exe",
+      "command": "python",
       "args": [
-        "${PLUGIN_ROOT}/server/docker_mcp.py",
+        "${PLUGIN_ROOT}/server/bootstrap_mcp.py",
         "ghidra"
       ],
       "env": {
-        "MODDING_LAB_ROOT": "D:\\modding-lab",
         "PYTHONIOENCODING": "utf-8"
       }
     },
     "rea": {
       "type": "stdio",
-      "command": "D:\\modding-lab\\windows\\venv\\Scripts\\python.exe",
+      "command": "python",
       "args": [
-        "${PLUGIN_ROOT}/server/docker_mcp.py",
+        "${PLUGIN_ROOT}/server/bootstrap_mcp.py",
         "rea"
       ],
       "env": {
-        "MODDING_LAB_ROOT": "D:\\modding-lab",
         "PYTHONIOENCODING": "utf-8"
       }
     }
