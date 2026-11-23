@@ -1,16 +1,30 @@
 # Visual Development Toolkit
 
-A Codex plugin integration layer for source projects, file packaging, optional asset tools, and compiled-artifact inspection. Version **1.2.0** connects MCP adapters to separately installed native Windows or Docker engines. PS5 projects are excluded.
+Build MCP integrations that expose real application capabilities, then package the tools, server connections and reusable skills as Codex plugins. Use supported application interfaces first; inspect shipped artifacts with REA, Ghidra or ILSpy when the integration needs evidence unavailable from documentation or source.
 
-## See the workspace
+## Explore the application-to-MCP case
 
-A searchable source archive with verified originals and reproducible packages.
+[Open the integration showcase](https://kennethyepez.com/work/visual-development-toolkit/index.html) · [Reproduce the native case](docs/APP-TO-MCP.md) · [Plugin source](plugins/game-modding-toolkit/.codex-plugin/plugin.json) · [App-to-MCP skill](plugins/game-modding-toolkit/skills/app-to-mcp/SKILL.md)
 
-![The current Visual Development Toolkit workspace](docs/images/workspace-desktop.jpg)
+An actual MCP run inspected and extracted an authored Unity TextAsset using AssetStudio/AssetBridge, inspected the authored adapter with ILSpy, preserved its originals and verified the packaged output. The gallery exposes the capability map, source, tool contracts, recorded results and a source-only Codex plugin package. Browser file verification and exports are separate from the recorded native execution.
 
-[Run locally](demo/README.md) · [Desktop and phone views](docs/PRODUCT.md)
+The existing visual-asset and application-analysis integrations remain available. Their installation, configuration and coverage differ; a successful fixture does not establish compatibility with every application or every export format.
 
-The local example and the connected engine have separate setup instructions and documented limits.
+
+![Application-to-MCP showcase on desktop](docs/images/app-mcp-desktop.jpg)
+
+<details><summary>Phone view</summary>
+
+![Application-to-MCP showcase on a phone](docs/images/app-mcp-mobile.jpg)
+
+</details>
+
+## Why these tools are combined
+
+- **REA, Ghidra and ILSpy** help establish application capabilities and callable boundaries when source or supported interfaces do not answer the integration question.
+- **Application libraries and authored adapters** perform the native operation. The AssetStudio/AssetBridge case demonstrates this layer without recreating the application UI.
+- **MCP** exposes typed operations to an agent; **Codex plugins** distribute server connections and the skills that guide their use.
+- The existing generation, conversion and visual-asset tools remain optional capabilities of the broader toolkit. They are not required to understand or run the focused application-bridge example.
 
 ## Project direction and use
 
@@ -18,7 +32,7 @@ The local example and the connected engine have separate setup instructions and 
 
 See [use and licensing](LICENSE.md), [contributing](CONTRIBUTING.md), and [security reporting](SECURITY.md).
 
-## Portable quickstart
+## Portable gateway quickstart
 
 Review the source and exercise the portable MCP gateway before installing any native engine. Requires Python 3.13; the walkthrough does not start Docker, Ghidra, or REA and does not call a paid provider.
 

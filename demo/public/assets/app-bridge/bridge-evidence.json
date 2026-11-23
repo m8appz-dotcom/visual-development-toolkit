@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "case": "AssetStudio application to MCP",
+  "transport": "actual MCP stdio",
+  "fixture": "Repository-authored Unity TextAsset",
+  "nativeApplication": "AssetStudio via AssetBridge",
+  "paidCalls": 0,
+  "desktopInput": false,
+  "checks": [
+    {
+      "name": "Native Unity inventory",
+      "status": "passed",
+      "observed": "LabReadme · TextAsset"
+    },
+    {
+      "name": "Native TextAsset export",
+      "status": "passed",
+      "bytes": 58,
+      "sha256": "1dd4db1bed41e6433c4e499ba61339327844a45eb1668c9407554de8587bd354",
+      "matchesOriginal": true
+    },
+    {
+      "name": "ILSpy adapter inspection",
+      "status": "passed",
+      "scope": "Authored AssetBridge adapter; external application code is not published"
+    },
+    {
+      "name": "Original integrity",
+      "status": "passed"
+    },
+    {
+      "name": "Package read-back",
+      "status": "passed",
+      "originalBytesPreserved": true
+    }
+  ],
+  "toolNames": [
+    "component_status",
+    "create_project",
+    "import_target",
+    "recon_game",
+    "run_um",
+    "rea_command",
+    "decompile_dotnet",
+    "inspect_unity_assets",
+    "export_unity_assets",
+    "list_project_files",
+    "read_project_text",
+    "verify_originals",
+    "windows_game_tool",
+    "open_windows_tool",
+    "package_mod",
+    "package_project"
+  ],
+  "operations": [
+    "create_project",
+    "import_target",
+    "inspect_unity_assets",
+    "export_unity_assets",
+    "import_target",
+    "import_target",
+    "import_target",
+    "import_target",
+    "decompile_dotnet",
+    "verify_originals"
+  ],
+  "limitations": [
+    "A native TextAsset fixture validates this adapter path, not every AssetStudio export format.",
+    "No real holder passkey enrollment or recovery is asserted by this machine-only MCP run."
+  ]
+}

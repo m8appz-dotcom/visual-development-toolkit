@@ -1,8 +1,10 @@
 # Visual Development Toolkit — interactive English demo
 
-Search, filter or sort the sixteen English collection files. Inspect an original, select files, and compare their SHA-256 with the included manifest. Export a standard ZIP containing the original bytes and a package manifest. Changed files stop packaging.
+Inspect one real application integration through its capability map, native adapter, MCP contracts, server implementation, Codex plugin manifest and reusable skill. Open the saved native run, verify the included source files and download the focused plugin package.
 
-See [ENGINES.md](ENGINES.md) for the actual engine connection, additional runtime setup, credentials and acceptance limits.
+[Public integration showcase](https://kennethyepez.com/work/visual-development-toolkit/index.html) · [Native case and package setup](../docs/APP-TO-MCP.md)
+
+The public showcase uses actual recorded MCP evidence; opening it does not start a native application. Browser verification and selection exports work on the included original bytes. The local server below retains private workspace access and its live gateway adapter. See [ENGINES.md](ENGINES.md) for their separate setup and limits.
 
 ## Run locally
 
@@ -19,9 +21,9 @@ Open **http://localhost:8875/**. The server binds only to 127.0.0.1. If another 
 
 ## Try the full example
 
-1. Search, filter or sort the sixteen English collection files.
-2. Inspect an original, select files, and compare their SHA-256 with the included manifest.
-3. Export a standard ZIP containing the original bytes and a package manifest. Changed files stop packaging.
+1. Search or filter the application, MCP, plugin, skill and evidence artifacts.
+2. Inspect a source file or the recorded native run. Review the tool contracts and skill.
+3. Download the Codex plugin, or verify and export selected original files. Changed files stop packaging.
 
 All UI labels, accessibility text, demo conversation/script content and new exports are in English. English adaptations are separate fixtures; historical source examples remain unchanged. User-entered text retains the language the user types.
 

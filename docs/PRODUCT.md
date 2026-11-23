@@ -1,17 +1,17 @@
-# Visual Development Toolkit — product review
+# Visual Development Toolkit — app-to-MCP showcase
 
-A searchable source archive with verified originals and reproducible packages.
+[Open the integration showcase](https://kennethyepez.com/work/visual-development-toolkit/index.html) · [Reproduce the real case](APP-TO-MCP.md)
 
-## Desktop
+Build MCP tools around an application's native capabilities and package those tools with server connections and reusable Codex skills. The approved gallery design now presents one coherent application bridge: AssetStudio/AssetBridge, actual MCP contracts, plugin source, an app-to-mcp skill and recorded native verification.
 
-![Current desktop workspace](images/workspace-desktop.jpg)
+The recorded case extracted an authored Unity TextAsset, matched the original bytes, inspected the authored adapter with ILSpy and read the result back from its package. The public interface provides real file inspection, integrity checks and plugin downloads. It distinguishes those browser actions from the saved native run.
 
-## Phone
+![Application-to-MCP showcase on desktop](images/app-mcp-desktop.jpg)
 
-![Current phone workspace at a 390px viewport](images/workspace-mobile.jpg)
+<details><summary>Phone view</summary>
 
-## Try it
+![Application-to-MCP showcase on a phone](images/app-mcp-mobile.jpg)
 
-Follow [local setup](../demo/README.md). Guest exploration uses authored examples. The [engine setup](../demo/ENGINES.md) explains which actions use the repository engine and which need private provider configuration. Private workspace access uses the existing passkey flow.
+</details>
 
-These are original browser captures of the current interface. No image was cropped, resized or regenerated. The CSS maintenance change preserves the selected composition and removes the other products’ styles.
+Private workspace access retains its existing passkey flow. Machine-only package checks do not claim fresh-client installation, human enrollment or recovery acceptance. See [local setup](../demo/README.md) and [coverage](APP-TO-MCP.md#coverage).

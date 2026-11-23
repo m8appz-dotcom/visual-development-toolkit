@@ -294,10 +294,13 @@ textarea {
     font-size: 30px;
   }
   .toolkit-header .access-button {
-    margin-left: auto;
+    order: 4;
+    margin-left: 0;
+    min-height: 28px;
   }
   .toolkit-description {
-    display: none;
+    display: block;
+    line-height: 1.4;
   }
   .toolkit-view {
     font-size: 12px;
@@ -324,6 +327,15 @@ textarea {
     margin-top: 12px;
     justify-content: space-between;
     gap: 8px;
+  }
+  .package-toolbar .action-row > a,
+  .package-toolbar .action-row > [data-recorded-run] {
+    flex-basis: 100%;
+    text-align: left;
+    line-height: 1.5;
+  }
+  .toolkit-footer {
+    flex-wrap: wrap;
   }
   .package-toolbar button,
   .package-toolbar select {

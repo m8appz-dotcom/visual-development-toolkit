@@ -160,10 +160,14 @@ test("included immutable assets retain their hashes", () => {
   }
 });
 test("collection entries match the package manifest when present", () => {
-  const manifestPath = path.join(root, "public", "assets", "manifest.json");
+  const manifestPath = path.join(root, "public", "assets", "collection.json");
   if (!existsSync(manifestPath)) return;
   const manifest = JSON.parse(readFileSync(manifestPath));
-  assert.equal(manifest.length, 16);
+  assert.ok(manifest.length > 0);
+  assert.equal(
+    new Set(manifest.map((item) => item.path)).size,
+    manifest.length,
+  );
   for (const item of manifest) {
     const bytes = readFileSync(path.join(root, "public", "assets", item.path));
     assert.equal(createHash("sha256").update(bytes).digest("hex"), item.sha256);
