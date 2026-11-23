@@ -4,7 +4,8 @@ ROOT=pathlib.Path(__file__).parent
 
 def configure(runtime,write=True,*,plugin_root=None,python=None,mode='native'):
     runtime=pathlib.Path(runtime).resolve()
-    interpreter=pathlib.Path(python).resolve() if python else runtime/'windows/venv/Scripts/python.exe'
+    # Keep venv executable symlinks: dereferencing them selects the base Python.
+    interpreter=pathlib.Path(os.path.abspath(os.path.expanduser(str(python)))) if python else runtime/'windows/venv/Scripts/python.exe'
     if mode not in {'native','portable','docker'}:
         raise ValueError('Choose native, portable or docker mode.')
     if write and (not runtime.is_dir() or not interpreter.is_file()):

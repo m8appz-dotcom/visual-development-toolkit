@@ -2,7 +2,7 @@
 from __future__ import annotations
 import argparse, json, os
 from pathlib import Path
-import queue, subprocess, threading, time, zipfile
+import queue, subprocess, threading, time, uuid, zipfile
 
 
 def main():
@@ -60,22 +60,23 @@ def main():
                 result=request('mcpServer/tool/call',{'threadId':tid,'server':server,'tool':name,'arguments':arguments})
                 if result.get('isError'): raise RuntimeError(json.dumps(result))
                 return result
-            project_name='codex-'+work.name
+            project_name='codex-'+uuid.uuid4().hex
             created=tool('create_project',{'name':project_name})
-            fixture=work/'owned-fixture.txt';fixture.write_text('Toolkit isolated Codex client fixture.\n',encoding='utf-8')
+            expected=b'Toolkit isolated Codex client fixture.\n'
+            fixture=work/'owned-fixture.txt';fixture.write_bytes(expected)
             imported=tool('import_target',{'project_name':project_name,'source_path':str(fixture)})
             verified=tool('verify_originals',{'project_name':project_name})
             output=args.runtime.resolve()/'projects'/project_name/'output/client-package';output.mkdir(parents=True,exist_ok=True)
-            (output/'owned-fixture.txt').write_bytes(fixture.read_bytes())
+            (output/'owned-fixture.txt').write_bytes(expected)
             packaged=tool('package_project',{'project_name':project_name,'output_folder':'output/client-package'})
             parsed=lambda value: json.loads(next(c['text'] for c in value['content'] if c['type']=='text'))
-            if not parsed(verified).get('ok') or fixture.read_bytes()!=(output/'owned-fixture.txt').read_bytes():
+            if not parsed(verified).get('ok') or fixture.read_bytes()!=expected or (output/'owned-fixture.txt').read_bytes()!=expected:
                 raise ValueError('Original verification failed')
             archive=Path(parsed(packaged)['archive']).resolve()
             if not archive.is_relative_to(args.runtime.resolve()/'projects'/project_name/'output'):
                 raise ValueError('Package escaped the isolated project')
             with zipfile.ZipFile(archive) as package:
-                if package.namelist()!=['owned-fixture.txt'] or package.read('owned-fixture.txt')!=fixture.read_bytes():
+                if package.namelist()!=['owned-fixture.txt'] or package.read('owned-fixture.txt')!=expected:
                     raise ValueError('Package read-back failed')
             rejected=request('mcpServer/tool/call',{'threadId':tid,'server':server,'tool':'read_project_text','arguments':{'project_name':project_name,'file_path':'../outside.txt'}})
             if not rejected.get('isError'):
@@ -85,6 +86,7 @@ def main():
             assert 'plugins' in skill_text
             report={'client':init,'pluginVersion':'1.2.2','pluginSkillDiscovered':True,'gateway':server,'toolCount':len(candidates[0]['tools']),'calls':['create_project','import_target','verify_originals','package_project'],'created':created,'imported':imported,'verified':verified,'packaged':packaged,'nativeEnginesStarted':False,'modelInferenceCalls':0}
             report.update(status='passed',packageReadBackPassed=True,inputUnchanged=True,outsidePathRejected=True,
+                          immutableBaselineVerified=True,
                           optionalNativeAdapters='Not started; require their separately configured native runtime')
             (work/'client-checks.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
             print(json.dumps({'status':'passed','pluginVersion':'1.2.2','skill':True,'tools':report['toolCount'],'calls':report['calls']}))

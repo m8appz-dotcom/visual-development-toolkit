@@ -44,7 +44,7 @@ def build(run: Path, client_run: Path | None = None):
         raise ValueError("Choose a completed native run with no failed checks")
     if client_run is not None:
         client = json.loads((client_run / "client-checks.json").read_text(encoding="utf-8"))
-        if client.get("status") != "passed" or not all(client.get(k) for k in ("pluginSkillDiscovered", "packageReadBackPassed", "inputUnchanged", "outsidePathRejected")):
+        if client.get("status") != "passed" or not all(client.get(k) for k in ("pluginSkillDiscovered", "packageReadBackPassed", "inputUnchanged", "outsidePathRejected", "immutableBaselineVerified")):
             raise ValueError("Choose a completed isolated Codex client check")
         evidence["codexClient"] = {"pluginVersion": client["pluginVersion"], "skillDiscovered": True,
             "toolCount": client["toolCount"], "calls": client["calls"], "inputUnchanged": True,

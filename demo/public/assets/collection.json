@@ -168,8 +168,8 @@
     "label": "Downloadable Codex plugin",
     "type": "package",
     "mime": "application/zip",
-    "bytes": 13871,
-    "sha256": "e9176d73b8979e90194b9af87984cd8a4e7de9649eda21ba403cdd8a2ab3eade",
+    "bytes": 13935,
+    "sha256": "1468c9c303c33c17f61a0035c6eda148dae42f4b93baf6a450073471b3c97b90",
     "cover": "covers/workflow-12.svg",
     "preview": [
       "plugin.json",
