@@ -28,9 +28,15 @@ python tools/build_plugin_showcase.py --run PATH_TO_NEW_RUN
 python tools/check_plugin_package.py --package demo/public/assets/app-bridge/toolkit-codex-plugin.zip --work PATH_TO_NEW_PACKAGE_CHECK
 ```
 
-The native case runner holds machine paths and full traces only in its private output. The builder selects public fixture evidence and adapter source; it excludes installed binaries and private configuration. The ZIP is a focused source package: manifest, MCP connections, authored server adapters and the app-to-mcp skill. Set `MODDING_LAB_ROOT` privately to an existing runtime before invoking its servers. The bootstrap does not install engines or silently start a stopped Docker service. The legacy plugin ID stays stable for compatibility.
+The native case runner holds machine paths and full traces only in its private output. The builder selects public fixture evidence and adapter source; it excludes installed binaries and private configuration. The ZIP is a focused source package: manifest, MCP connections, authored server adapters and the app-to-mcp skill. Configure the private copy as shown below. Codex does not forward arbitrary caller variables into the plugin automatically. The bootstrap does not install engines or silently start a stopped Docker service. The legacy plugin ID stays stable for compatibility.
 
-The existing `configure_plugin.py --runtime-root ... --dry-run` can inspect local registration changes. Do not overwrite another installed plugin or its configuration to test this source package. This repository's public snapshot and a locally evolved installation can have different versions and purposes.
+Use the existing setup helper on a private source or installed copy; the source-only ZIP includes the same helper as `configure_runtime.py`. Keep its machine-specific output private.
+
+```sh
+python configure_runtime.py --plugin-root PATH_TO_PRIVATE_PLUGIN --runtime-root PATH_TO_EXISTING_RUNTIME --python PATH_TO_EXISTING_PYTHON --mode portable
+```
+
+For native adapters choose `--mode native` and an existing native runtime. The helper uses a bare executable name and a private interpreter PATH, as required by the portable plugin format. `--dry-run` inspects the change without writing it. Do not overwrite another installed plugin or its configuration to test this source package. This repository's public snapshot and a locally evolved installation can have different versions and purposes.
 
 ## What the public demo does
 
@@ -41,3 +47,9 @@ The local workspace retains its existing passkey-protected copies and live engin
 ## Coverage
 
 The native fixture validates the TextAsset path, not every AssetStudio format or GUI feature. The runtime scope artifact distinguishes actual operations from connection/version checks and unverified engines. REA's managed identity query succeeded; later member-level requests failed MCP transport and are not presented as passed. No paid generation, desktop input, third-party sample-image transformation or Spark service change occurred.
+
+## Fresh Codex client validation
+
+On 23 November 2026, an isolated Codex CLI 0.163.0 home installed plugin1.2.2 from a local marketplace. Codex discovered the app-to-mcp skill and16 MCP tools. Through the actual Codex client, create_project, import_target, verify_originals and package_project completed; independent ZIP read-back matched the owned fixture and an outside-project path was rejected. No model inference or native engine startup was required. This validates the portable gateway, not all optional native engines or a human passkey ceremony.
+
+The test caught and fixed a stale canonical root manifest and an absolute-executable setup incompatibility. Canonical and compatibility identity now match; regression tests cover both and the downloadable package. See tools/check_codex_client.py to repeat the installed-client check with an isolated home and explicitly configured runtime.

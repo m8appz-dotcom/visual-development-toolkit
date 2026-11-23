@@ -18,3 +18,5 @@
 *.woff2 -text
 *.ttf -text
 *.otf -text
+# Native VectorCraft documents include a binary PDF-compatible payload.
+*.vectorcraft binary

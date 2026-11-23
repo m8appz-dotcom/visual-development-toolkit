@@ -35,6 +35,8 @@ const saved = load("toolkit", { selected: [] }, valid);
 let selected = new Set(saved.selected);
 const persist = () => save("toolkit", { selected: [...selected] });
 function thumbnail(a) {
+  if (/^covers\/workflow-\d{2}\.svg$/.test(a.cover || ""))
+    return `<img class="workflow-cover" src="${esc(a.cover)}" alt="" loading="lazy">`;
   if (a.type === "image")
     return `<img src="assets/${a.path}" alt="${esc(a.label)}">`;
   return `<div class="artifact-source artifact-source-${esc(a.category || "mcp")}"><span>${esc(a.name.split(".").pop().toUpperCase())}</span><pre>${esc((a.sourcePreview || a.preview || ["Open source file"]).join("\n"))}</pre><span>${esc(a.name)}</span></div>`;
@@ -222,7 +224,7 @@ function render() {
           const evidence = await response.json();
           modal(
             "Recorded application-to-MCP run",
-            `<p>AssetStudio inspected and extracted an authored Unity TextAsset through the real MCP gateway. This is a saved run; opening it does not start the native application.</p><table><thead><tr><th>Check</th><th>Observed result</th></tr></thead><tbody>${evidence.checks.map((c) => `<tr><td>${esc(c.name)}</td><td>${esc(c.status)}${c.matchesOriginal ? " · Matches the original" : ""}</td></tr>`).join("")}</tbody></table><p>Tools are exposed by the MCP server. The Codex plugin bundles the server connections and a reusable skill.</p>`,
+            `<p>AssetStudio inspected and extracted an authored Unity TextAsset through the real MCP gateway. This is a saved run; opening it does not start the native application.</p><table><thead><tr><th>Check</th><th>Observed result</th></tr></thead><tbody>${evidence.checks.map((c) => `<tr><td>${esc(c.name)}</td><td>${esc(c.status)}${c.matchesOriginal ? " · Matches the original" : ""}</td></tr>`).join("")}</tbody></table>${evidence.codexClient ? `<h3>Installed in an isolated Codex client</h3><p>Version ${esc(evidence.codexClient.pluginVersion)} loaded the app-to-MCP skill and ${esc(evidence.codexClient.toolCount)} tools. Import, original verification and package read-back passed. A path outside the project was rejected. This check used the portable gateway; native adapters have their separate run above.</p>` : ""}<p>Tools are exposed by the MCP server. The Codex plugin bundles the server connections and a reusable skill.</p>`,
           );
         } catch (error) {
           notify(error.message, true);
